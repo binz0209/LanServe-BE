@@ -1,6 +1,7 @@
 ﻿// GenericRepository.cs
 using MongoDB.Driver;
 using System.Linq.Expressions;
+using LanServe.Application.Interfaces.Repositories;
 
 namespace LanServe.Infrastructure.Repositories;
 
