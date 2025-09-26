@@ -34,6 +34,20 @@ builder.Services.AddScoped<INotificationRepository>(sp =>
     new NotificationRepository(sp.GetRequiredService<MongoDbContext>().Notifications));
 builder.Services.AddScoped<IReviewRepository>(sp =>
     new ReviewRepository(sp.GetRequiredService<MongoDbContext>().Reviews));
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ISkillService, SkillService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IProjectSkillService, ProjectSkillService>();
+builder.Services.AddScoped<IProposalService, ProposalService>();
+builder.Services.AddScoped<IContractService, ContractService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+
+
 
 var app = builder.Build();
 
