@@ -1,23 +1,36 @@
-﻿using LanServe.Domain.Entities;
+﻿using LanServe.Application.Interfaces.Repositories;
+using LanServe.Domain.Entities;
 using MongoDB.Driver;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Repositories
+namespace LanServe.Infrastructure.Repositories;
+
+public class ProjectSkillRepository : IProjectSkillRepository
 {
-    public class ProjectSkillRepository : GenericRepository<ProjectSkill>, IProjectSkillRepository
+    private readonly IMongoCollection<ProjectSkill> _collection;
+
+    public ProjectSkillRepository(IMongoCollection<ProjectSkill> collection)
     {
-        public ProjectSkillRepository(IMongoCollection<ProjectSkill> collection) : base(collection) { }
+        _collection = collection;
+    }
 
-        public async Task<IEnumerable<ProjectSkill>> GetByProjectAsync(string projectId)
-        {
-            var list = await _collection.Find(ps => ps.ProjectId == projectId).ToListAsync();
-            return list.AsEnumerable();
-        }
+    public async Task<IEnumerable<ProjectSkill>> GetByProjectIdAsync(string projectId)
+        => await _collection.Find(x => x.ProjectId == projectId).ToListAsync();
 
-        public async Task<IReadOnlyList<ProjectSkill>> GetByProjectIdAsync(string projectId)
-        {
-            var list = await _collection.Find(ps => ps.ProjectId == projectId).ToListAsync();
-            return list;
-        }
+    public async Task<IEnumerable<ProjectSkill>> GetBySkillIdAsync(string skillId)
+        => await _collection.Find(x => x.SkillId == skillId).ToListAsync();
+
+    public async Task<ProjectSkill?> GetByIdAsync(string id)
+        => await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+
+    public async Task<ProjectSkill> InsertAsync(ProjectSkill entity)
+    {
+        await _collection.InsertOneAsync(entity);
+        return entity;
+    }
+
+    public async Task<bool> DeleteAsync(string id)
+    {
+        var result = await _collection.DeleteOneAsync(x => x.Id == id);
+        return result.DeletedCount > 0;
     }
 }

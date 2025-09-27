@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface INotificationService
 {
-    public interface INotificationService
-    {
-        Task<Notification> CreateAsync(Notification notification);
-        Task<IEnumerable<Notification>> GetByUserIdAsync(string userId);
-        Task MarkAsReadAsync(string id);
-    }
+    Task<IEnumerable<Notification>> GetByUserAsync(string userId);
+    Task<Notification?> GetByIdAsync(string id);
+    Task<Notification> CreateAsync(Notification entity);
+    Task<bool> MarkAsReadAsync(string id);
+    Task<bool> DeleteAsync(string id);
 }

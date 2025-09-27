@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface IProjectService
 {
-    public interface IProjectService
-    {
-        Task<Project> CreateAsync(Project project);
-        Task<Project?> GetByIdAsync(string id);
-        Task<IEnumerable<Project>> GetAllAsync();
-        Task UpdateAsync(Project project);
-        Task DeleteAsync(string id);
-    }
+    Task<Project?> GetByIdAsync(string id);
+    Task<IEnumerable<Project>> GetByOwnerIdAsync(string ownerId);
+    Task<IEnumerable<Project>> GetOpenProjectsAsync();
+    Task<Project> CreateAsync(Project entity);
+    Task<bool> UpdateAsync(string id, Project entity);
+    Task<bool> DeleteAsync(string id);
 }

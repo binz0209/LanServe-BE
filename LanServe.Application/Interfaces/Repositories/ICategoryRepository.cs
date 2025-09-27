@@ -2,7 +2,11 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface ICategoryRepository : IGenericRepository<Category>
+public interface ICategoryRepository
 {
-    Task<Category?> GetByNameAsync(string name);
+    Task<IEnumerable<Category>> GetAllAsync();
+    Task<Category?> GetByIdAsync(string id);
+    Task<Category> InsertAsync(Category entity);
+    Task<bool> UpdateAsync(Category entity);
+    Task<bool> DeleteAsync(string id);
 }

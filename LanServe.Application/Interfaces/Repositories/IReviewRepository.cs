@@ -2,9 +2,11 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface IReviewRepository : IGenericRepository<Review>
+public interface IReviewRepository
 {
-    Task<IEnumerable<Review>> GetForUserAsync(string revieweeId);
-    Task<double> GetAverageRatingAsync(string revieweeId);
-    Task<IReadOnlyList<Review>> GetByUserIdAsync(string userId);
+    Task<Review?> GetByIdAsync(string id);
+    Task<IEnumerable<Review>> GetByProjectIdAsync(string projectId);
+    Task<IEnumerable<Review>> GetByUserAsync(string userId); // cả reviewer lẫn reviewee
+    Task<Review> InsertAsync(Review entity);
+    Task<bool> DeleteAsync(string id);
 }

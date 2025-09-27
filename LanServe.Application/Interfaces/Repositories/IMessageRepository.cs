@@ -1,12 +1,12 @@
 ﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Repositories
-{
-    public interface IMessageRepository : IGenericRepository<Message>
-    {
-        Task<IEnumerable<Message>> GetConversationAsync(string conversationKey, int skip = 0, int limit = 50);
-        Task<int> CountUnreadAsync(string userId);
+namespace LanServe.Application.Interfaces.Repositories;
 
-        Task<IEnumerable<Message>> GetByConversationIdAsync(string conversationId);
-    }
+public interface IMessageRepository
+{
+    Task<IEnumerable<Message>> GetByConversationAsync(string conversationKey);
+    Task<IEnumerable<Message>> GetByProjectAsync(string projectId);
+    Task<Message?> GetByIdAsync(string id);
+    Task<Message> InsertAsync(Message entity);
+    Task<bool> MarkAsReadAsync(string id);
 }

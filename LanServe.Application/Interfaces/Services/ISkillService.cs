@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface ISkillService
 {
-    public interface ISkillService
-    {
-        Task<Skill> CreateAsync(Skill skill);
-        Task<IEnumerable<Skill>> GetAllAsync();
-        Task DeleteAsync(string id);
-    }
-
+    Task<IEnumerable<Skill>> GetAllAsync();
+    Task<IEnumerable<Skill>> GetByCategoryIdAsync(string categoryId);
+    Task<Skill?> GetByIdAsync(string id);
+    Task<Skill> CreateAsync(Skill entity);
+    Task<bool> UpdateAsync(string id, Skill entity);
+    Task<bool> DeleteAsync(string id);
 }

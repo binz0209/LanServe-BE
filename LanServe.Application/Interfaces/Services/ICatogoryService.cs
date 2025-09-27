@@ -1,17 +1,12 @@
 ﻿using LanServe.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface ICategoryService
 {
-    public interface ICategoryService
-    {
-        Task<Category> CreateAsync(Category category);
-        Task<IEnumerable<Category>> GetAllAsync();
-        Task<Category?> GetByIdAsync(string id);
-        Task DeleteAsync(string id);
-    }
+    Task<IEnumerable<Category>> GetAllAsync();
+    Task<Category?> GetByIdAsync(string id);
+    Task<Category> CreateAsync(Category entity);
+    Task<bool> UpdateAsync(string id, Category entity);
+    Task<bool> DeleteAsync(string id);
 }

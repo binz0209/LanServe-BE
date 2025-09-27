@@ -2,10 +2,12 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface IProposalRepository : IGenericRepository<Proposal>
+public interface IProposalRepository
 {
-    Task<Proposal?> GetByProjectAndFreelancerAsync(string projectId, string freelancerId);
-    Task<IEnumerable<Proposal>> GetByProjectAsync(string projectId);
-    Task<IEnumerable<Proposal>> GetByFreelancerAsync(string freelancerId);
-    Task<IReadOnlyList<Proposal>> GetByProjectIdAsync(string projectId);
+    Task<Proposal?> GetByIdAsync(string id);
+    Task<IEnumerable<Proposal>> GetByProjectIdAsync(string projectId);
+    Task<IEnumerable<Proposal>> GetByFreelancerIdAsync(string freelancerId);
+    Task<Proposal> InsertAsync(Proposal entity);
+    Task<bool> UpdateStatusAsync(string id, string status);
+    Task<bool> DeleteAsync(string id);
 }

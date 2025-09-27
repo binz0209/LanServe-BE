@@ -1,42 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Services
+namespace LanServe.Application.Services;
+
+public class ProposalService : IProposalService
 {
-    public class ProposalService : IProposalService
+    private readonly IProposalRepository _repo;
+
+    public ProposalService(IProposalRepository repo)
     {
-        private readonly IProposalRepository _proposalRepository;
-
-        public ProposalService(IProposalRepository proposalRepository)
-        {
-            _proposalRepository = proposalRepository;
-        }
-
-        public async Task<Proposal> CreateAsync(Proposal proposal)
-        {
-            await _proposalRepository.AddAsync(proposal);
-            return proposal;
-        }
-
-        public async Task<Proposal?> GetByIdAsync(string id) => await _proposalRepository.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Proposal>> GetByProjectIdAsync(string projectId)
-            => await _proposalRepository.GetByProjectIdAsync(projectId);
-
-        public async Task UpdateAsync(Proposal proposal)
-        {
-            if (string.IsNullOrWhiteSpace(proposal.Id))
-                throw new ArgumentException("Proposal.Id is required");
-
-            await _proposalRepository.UpdateAsync(proposal.Id, proposal);
-        }
-
-        public async Task DeleteAsync(string id) => await _proposalRepository.DeleteAsync(id);
+        _repo = repo;
     }
+
+    public Task<Proposal?> GetByIdAsync(string id)
+        => _repo.GetByIdAsync(id);
+
+    public Task<IEnumerable<Proposal>> GetByProjectIdAsync(string projectId)
+        => _repo.GetByProjectIdAsync(projectId);
+
+    public Task<IEnumerable<Proposal>> GetByFreelancerIdAsync(string freelancerId)
+        => _repo.GetByFreelancerIdAsync(freelancerId);
+
+    public Task<Proposal> CreateAsync(Proposal entity)
+    {
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.Status = "Pending";
+        return _repo.InsertAsync(entity);
+    }
+
+    public Task<bool> UpdateStatusAsync(string id, string status)
+        => _repo.UpdateStatusAsync(id, status);
+
+    public Task<bool> DeleteAsync(string id)
+        => _repo.DeleteAsync(id);
 }

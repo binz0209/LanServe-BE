@@ -1,34 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Application.Services
+namespace LanServe.Application.Services;
+
+public class CategoryService : ICategoryService
 {
-    public class CategoryService : ICategoryService
+    private readonly ICategoryRepository _repo;
+
+    public CategoryService(ICategoryRepository repo)
     {
-        private readonly ICategoryRepository _categoryRepository;
-
-        public CategoryService(ICategoryRepository categoryRepository)
-        {
-            _categoryRepository = categoryRepository;
-        }
-
-        public async Task<Category> CreateAsync(Category category)
-        {
-            await _categoryRepository.AddAsync(category);
-            return category;
-        }
-
-        public async Task<IEnumerable<Category>> GetAllAsync() => await _categoryRepository.GetAllAsync();
-
-        public async Task<Category?> GetByIdAsync(string id) => await _categoryRepository.GetByIdAsync(id);
-
-        public async Task DeleteAsync(string id) => await _categoryRepository.DeleteAsync(id);
+        _repo = repo;
     }
 
+    public Task<IEnumerable<Category>> GetAllAsync()
+        => _repo.GetAllAsync();
+
+    public Task<Category?> GetByIdAsync(string id)
+        => _repo.GetByIdAsync(id);
+
+    public Task<Category> CreateAsync(Category entity)
+        => _repo.InsertAsync(entity);
+
+    public async Task<bool> UpdateAsync(string id, Category entity)
+    {
+        entity.Id = id;
+        return await _repo.UpdateAsync(entity);
+    }
+
+    public Task<bool> DeleteAsync(string id)
+        => _repo.DeleteAsync(id);
 }

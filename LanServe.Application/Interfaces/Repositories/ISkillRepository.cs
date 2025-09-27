@@ -2,7 +2,12 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface ISkillRepository : IGenericRepository<Skill>
+public interface ISkillRepository
 {
-    Task<IEnumerable<Skill>> GetByCategoryAsync(string categoryId);
+    Task<IEnumerable<Skill>> GetAllAsync();
+    Task<IEnumerable<Skill>> GetByCategoryIdAsync(string categoryId);
+    Task<Skill?> GetByIdAsync(string id);
+    Task<Skill> InsertAsync(Skill entity);
+    Task<bool> UpdateAsync(Skill entity);
+    Task<bool> DeleteAsync(string id);
 }

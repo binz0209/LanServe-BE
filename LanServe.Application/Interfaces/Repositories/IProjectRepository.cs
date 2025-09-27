@@ -2,7 +2,12 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface IProjectRepository : IGenericRepository<Project>
+public interface IProjectRepository
 {
-    Task<IEnumerable<Project>> GetByOwnerAsync(string ownerId, int skip = 0, int limit = 20);
+    Task<Project?> GetByIdAsync(string id);
+    Task<IEnumerable<Project>> GetByOwnerIdAsync(string ownerId);
+    Task<IEnumerable<Project>> GetOpenProjectsAsync();
+    Task<Project> InsertAsync(Project entity);
+    Task<bool> UpdateAsync(Project entity);
+    Task<bool> DeleteAsync(string id);
 }

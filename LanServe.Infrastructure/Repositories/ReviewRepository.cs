@@ -1,36 +1,40 @@
-﻿using LanServe.Domain.Entities;
+﻿using LanServe.Application.Interfaces.Repositories;
+using LanServe.Domain.Entities;
 using MongoDB.Driver;
-using LanServe.Application.Interfaces.Repositories;
-using System.Linq; // dùng cho Average
 
-namespace LanServe.Infrastructure.Repositories
+namespace LanServe.Infrastructure.Repositories;
+
+public class ReviewRepository : IReviewRepository
 {
-    public class ReviewRepository : GenericRepository<Review>, IReviewRepository
+    private readonly IMongoCollection<Review> _collection;
+
+    public ReviewRepository(IMongoCollection<Review> collection)
     {
-        public ReviewRepository(IMongoCollection<Review> collection) : base(collection) { }
+        _collection = collection;
+    }
 
-        // (giữ API hiện có nhưng dùng await cho gọn)
-        public async Task<IEnumerable<Review>> GetForUserAsync(string revieweeId)
-        {
-            var list = await _collection.Find(r => r.RevieweeId == revieweeId).ToListAsync();
-            return list.AsEnumerable();
-        }
+    public async Task<Review?> GetByIdAsync(string id)
+        => await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        // >>> Bổ sung: implement đúng chữ ký interface yêu cầu
-        // Giả định interface: Task<IReadOnlyList<Review>> GetByUserIdAsync(string userId);
-        // Map userId -> RevieweeId theo domain hiện tại
-        public async Task<IReadOnlyList<Review>> GetByUserIdAsync(string userId)
-        {
-            var list = await _collection.Find(r => r.RevieweeId == userId)
-                                        .SortByDescending(r => r.CreatedAt)
-                                        .ToListAsync();
-            return list;
-        }
+    public async Task<IEnumerable<Review>> GetByProjectIdAsync(string projectId)
+        => await _collection.Find(x => x.ProjectId == projectId)
+                            .SortByDescending(x => x.CreatedAt)
+                            .ToListAsync();
 
-        public async Task<double> GetAverageRatingAsync(string revieweeId)
-        {
-            var reviews = await _collection.Find(r => r.RevieweeId == revieweeId).ToListAsync();
-            return reviews.Count == 0 ? 0 : reviews.Average(r => r.Rating);
-        }
+    public async Task<IEnumerable<Review>> GetByUserAsync(string userId)
+        => await _collection.Find(x => x.ReviewerId == userId || x.RevieweeId == userId)
+                            .SortByDescending(x => x.CreatedAt)
+                            .ToListAsync();
+
+    public async Task<Review> InsertAsync(Review entity)
+    {
+        await _collection.InsertOneAsync(entity);
+        return entity;
+    }
+
+    public async Task<bool> DeleteAsync(string id)
+    {
+        var result = await _collection.DeleteOneAsync(x => x.Id == id);
+        return result.DeletedCount > 0;
     }
 }

@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface IMessageService
 {
-    public interface IMessageService
-    {
-        Task<Message> CreateAsync(Message message);
-        Task<Message?> GetByIdAsync(string id);
-        Task<IEnumerable<Message>> GetByConversationIdAsync(string conversationId);
-        Task DeleteAsync(string id);
-    }
+    Task<IEnumerable<Message>> GetByConversationAsync(string conversationKey);
+    Task<IEnumerable<Message>> GetByProjectAsync(string projectId);
+    Task<Message?> GetByIdAsync(string id);
+    Task<Message> SendAsync(Message entity);
+    Task<bool> MarkAsReadAsync(string id);
 }

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface IPaymentService
 {
-    public interface IPaymentService
-    {
-        Task<Payment> CreateAsync(Payment payment);
-        Task<Payment?> GetByIdAsync(string id);
-    }
+    Task<Payment?> GetByIdAsync(string id);
+    Task<IEnumerable<Payment>> GetByContractIdAsync(string contractId);
+    Task<Payment> CreateAsync(Payment entity);
+    Task<bool> UpdateStatusAsync(string id, string newStatus);
+    Task<bool> DeleteAsync(string id);
+
+    // Mock checkout (fake payment gateway)
+    Task<Payment> MockCheckoutAsync(string contractId, decimal amount);
 }

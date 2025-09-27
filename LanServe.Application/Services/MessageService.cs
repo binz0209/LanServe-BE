@@ -1,34 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Services
+namespace LanServe.Application.Services;
+
+public class MessageService : IMessageService
 {
-    public class MessageService : IMessageService
+    private readonly IMessageRepository _repo;
+
+    public MessageService(IMessageRepository repo)
     {
-        private readonly IMessageRepository _messageRepository;
-
-        public MessageService(IMessageRepository messageRepository)
-        {
-            _messageRepository = messageRepository;
-        }
-
-        public async Task<Message> CreateAsync(Message message)
-        {
-            await _messageRepository.AddAsync(message);
-            return message;
-        }
-
-        public async Task<Message?> GetByIdAsync(string id) => await _messageRepository.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Message>> GetByConversationIdAsync(string conversationId)
-            => await _messageRepository.GetByConversationIdAsync(conversationId);
-
-        public async Task DeleteAsync(string id) => await _messageRepository.DeleteAsync(id);
+        _repo = repo;
     }
+
+    public Task<IEnumerable<Message>> GetByConversationAsync(string conversationKey)
+        => _repo.GetByConversationAsync(conversationKey);
+
+    public Task<IEnumerable<Message>> GetByProjectAsync(string projectId)
+        => _repo.GetByProjectAsync(projectId);
+
+    public Task<Message?> GetByIdAsync(string id)
+        => _repo.GetByIdAsync(id);
+
+    public Task<Message> SendAsync(Message entity)
+    {
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.IsRead = false;
+        return _repo.InsertAsync(entity);
+    }
+
+    public Task<bool> MarkAsReadAsync(string id)
+        => _repo.MarkAsReadAsync(id);
 }

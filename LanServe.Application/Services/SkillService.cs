@@ -1,31 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Services
+namespace LanServe.Application.Services;
+
+public class SkillService : ISkillService
 {
-    public class SkillService : ISkillService
+    private readonly ISkillRepository _repo;
+
+    public SkillService(ISkillRepository repo)
     {
-        private readonly ISkillRepository _skillRepository;
-
-        public SkillService(ISkillRepository skillRepository)
-        {
-            _skillRepository = skillRepository;
-        }
-
-        public async Task<Skill> CreateAsync(Skill skill)
-        {
-            await _skillRepository.AddAsync(skill);
-            return skill;
-        }
-
-        public async Task<IEnumerable<Skill>> GetAllAsync() => await _skillRepository.GetAllAsync();
-
-        public async Task DeleteAsync(string id) => await _skillRepository.DeleteAsync(id);
+        _repo = repo;
     }
+
+    public Task<IEnumerable<Skill>> GetAllAsync()
+        => _repo.GetAllAsync();
+
+    public Task<IEnumerable<Skill>> GetByCategoryIdAsync(string categoryId)
+        => _repo.GetByCategoryIdAsync(categoryId);
+
+    public Task<Skill?> GetByIdAsync(string id)
+        => _repo.GetByIdAsync(id);
+
+    public Task<Skill> CreateAsync(Skill entity)
+        => _repo.InsertAsync(entity);
+
+    public async Task<bool> UpdateAsync(string id, Skill entity)
+    {
+        entity.Id = id;
+        return await _repo.UpdateAsync(entity);
+    }
+
+    public Task<bool> DeleteAsync(string id)
+        => _repo.DeleteAsync(id);
 }

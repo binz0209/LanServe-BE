@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Services
+namespace LanServe.Application.Services;
+
+public class ContractService : IContractService
 {
-    public class ContractService : IContractService
+    private readonly IContractRepository _repo;
+
+    public ContractService(IContractRepository repo)
     {
-        private readonly IContractRepository _contractRepository;
-
-        public ContractService(IContractRepository contractRepository)
-        {
-            _contractRepository = contractRepository;
-        }
-
-        public async Task<Contract> CreateAsync(Contract contract)
-        {
-            await _contractRepository.AddAsync(contract);
-            return contract;
-        }
-
-        public async Task<Contract?> GetByIdAsync(string id) => await _contractRepository.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Contract>> GetAllAsync() => await _contractRepository.GetAllAsync();
-
-        public async Task UpdateAsync(Contract contract)  => await _contractRepository.UpdateAsync(contract.Id, contract);
-
-        public async Task DeleteAsync(string id) => await _contractRepository.DeleteAsync(id);
+        _repo = repo;
     }
+
+    public Task<Contract?> GetByIdAsync(string id)
+        => _repo.GetByIdAsync(id);
+
+    public Task<IEnumerable<Contract>> GetByClientIdAsync(string clientId)
+        => _repo.GetByClientIdAsync(clientId);
+
+    public Task<IEnumerable<Contract>> GetByFreelancerIdAsync(string freelancerId)
+        => _repo.GetByFreelancerIdAsync(freelancerId);
+
+    public Task<Contract> CreateAsync(Contract entity)
+        => _repo.InsertAsync(entity);
+
+    public async Task<bool> UpdateAsync(string id, Contract entity)
+    {
+        entity.Id = id;
+        return await _repo.UpdateAsync(entity);
+    }
+
+    public Task<bool> DeleteAsync(string id)
+        => _repo.DeleteAsync(id);
 }

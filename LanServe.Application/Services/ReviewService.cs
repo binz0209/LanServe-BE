@@ -1,34 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Services
+namespace LanServe.Application.Services;
+
+public class ReviewService : IReviewService
 {
-    public class ReviewService : IReviewService
+    private readonly IReviewRepository _repo;
+
+    public ReviewService(IReviewRepository repo)
     {
-        private readonly IReviewRepository _reviewRepository;
-
-        public ReviewService(IReviewRepository reviewRepository)
-        {
-            _reviewRepository = reviewRepository;
-        }
-
-        public async Task<Review> CreateAsync(Review review)
-        {
-            await _reviewRepository.AddAsync(review);
-            return review;
-        }
-
-        public async Task<Review?> GetByIdAsync(string id) => await _reviewRepository.GetByIdAsync(id);
-
-        public async Task<IEnumerable<Review>> GetByUserIdAsync(string userId)
-            => await _reviewRepository.GetByUserIdAsync(userId);
-
-        public async Task DeleteAsync(string id) => await _reviewRepository.DeleteAsync(id);
+        _repo = repo;
     }
+
+    public Task<Review?> GetByIdAsync(string id)
+        => _repo.GetByIdAsync(id);
+
+    public Task<IEnumerable<Review>> GetByProjectIdAsync(string projectId)
+        => _repo.GetByProjectIdAsync(projectId);
+
+    public Task<IEnumerable<Review>> GetByUserAsync(string userId)
+        => _repo.GetByUserAsync(userId);
+
+    public Task<Review> CreateAsync(Review entity)
+    {
+        entity.CreatedAt = DateTime.UtcNow;
+        return _repo.InsertAsync(entity);
+    }
+
+    public Task<bool> DeleteAsync(string id)
+        => _repo.DeleteAsync(id);
 }

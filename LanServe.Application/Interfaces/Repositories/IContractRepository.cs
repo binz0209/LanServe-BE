@@ -2,8 +2,12 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface IContractRepository : IGenericRepository<Contract>
+public interface IContractRepository
 {
-    Task<Contract?> GetByProjectAsync(string projectId);
-    Task<IEnumerable<Contract>> GetActiveByUserAsync(string userId, int take = 20);
+    Task<Contract?> GetByIdAsync(string id);
+    Task<IEnumerable<Contract>> GetByClientIdAsync(string clientId);
+    Task<IEnumerable<Contract>> GetByFreelancerIdAsync(string freelancerId);
+    Task<Contract> InsertAsync(Contract entity);
+    Task<bool> UpdateAsync(Contract entity);
+    Task<bool> DeleteAsync(string id);
 }

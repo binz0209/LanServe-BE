@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface IReviewService
 {
-    public interface IReviewService
-    {
-        Task<Review> CreateAsync(Review review);
-        Task<Review?> GetByIdAsync(string id);
-        Task<IEnumerable<Review>> GetByUserIdAsync(string userId);
-        Task DeleteAsync(string id);
-    }
+    Task<Review?> GetByIdAsync(string id);
+    Task<IEnumerable<Review>> GetByProjectIdAsync(string projectId);
+    Task<IEnumerable<Review>> GetByUserAsync(string userId);
+    Task<Review> CreateAsync(Review entity);
+    Task<bool> DeleteAsync(string id);
 }

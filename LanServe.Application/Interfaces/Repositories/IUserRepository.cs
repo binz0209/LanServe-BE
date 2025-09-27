@@ -2,7 +2,11 @@
 
 namespace LanServe.Application.Interfaces.Repositories;
 
-public interface IUserRepository : IGenericRepository<User>
+public interface IUserRepository
 {
+    Task<User?> GetByIdAsync(string id);
     Task<User?> GetByEmailAsync(string email);
+    Task<User> InsertAsync(User entity);
+    Task<bool> UpdateAsync(User entity);
+    Task<bool> DeleteAsync(string id);
 }

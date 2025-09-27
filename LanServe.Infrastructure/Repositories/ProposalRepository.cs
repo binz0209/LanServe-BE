@@ -1,31 +1,47 @@
-﻿using LanServe.Domain.Entities;
+﻿using LanServe.Application.Interfaces.Repositories;
+using LanServe.Domain.Entities;
 using MongoDB.Driver;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Repositories
+namespace LanServe.Infrastructure.Repositories;
+
+public class ProposalRepository : IProposalRepository
 {
-    public class ProposalRepository : GenericRepository<Proposal>, IProposalRepository
+    private readonly IMongoCollection<Proposal> _collection;
+
+    public ProposalRepository(IMongoCollection<Proposal> collection)
     {
-        public ProposalRepository(IMongoCollection<Proposal> collection) : base(collection) { }
+        _collection = collection;
+    }
 
-        // Lấy proposal theo project + freelancer
-        public Task<Proposal?> GetByProjectAndFreelancerAsync(string projectId, string freelancerId)
-            => _collection.Find(p => p.ProjectId == projectId && p.FreelancerId == freelancerId)
-                          .FirstOrDefaultAsync();
+    public async Task<Proposal?> GetByIdAsync(string id)
+        => await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
-        // Đang có: GetByProjectAsync
-        public async Task<IEnumerable<Proposal>> GetByProjectAsync(string projectId)
-            => await _collection.Find(p => p.ProjectId == projectId).ToListAsync();
+    public async Task<IEnumerable<Proposal>> GetByProjectIdAsync(string projectId)
+        => await _collection.Find(x => x.ProjectId == projectId)
+                            .SortByDescending(x => x.CreatedAt)
+                            .ToListAsync();
 
-        // chữ ký interface yêu cầu
-        public async Task<IReadOnlyList<Proposal>> GetByProjectIdAsync(string projectId)
-        {
-            var list = await _collection.Find(p => p.ProjectId == projectId).ToListAsync();
-            return list;
-        }
+    public async Task<IEnumerable<Proposal>> GetByFreelancerIdAsync(string freelancerId)
+        => await _collection.Find(x => x.FreelancerId == freelancerId)
+                            .SortByDescending(x => x.CreatedAt)
+                            .ToListAsync();
 
-        // Lấy proposal theo freelancer
-        public async Task<IEnumerable<Proposal>> GetByFreelancerAsync(string freelancerId)
-            => await _collection.Find(p => p.FreelancerId == freelancerId).ToListAsync();
+    public async Task<Proposal> InsertAsync(Proposal entity)
+    {
+        await _collection.InsertOneAsync(entity);
+        return entity;
+    }
+
+    public async Task<bool> UpdateStatusAsync(string id, string status)
+    {
+        var update = Builders<Proposal>.Update.Set(x => x.Status, status);
+        var result = await _collection.UpdateOneAsync(x => x.Id == id, update);
+        return result.ModifiedCount > 0;
+    }
+
+    public async Task<bool> DeleteAsync(string id)
+    {
+        var result = await _collection.DeleteOneAsync(x => x.Id == id);
+        return result.DeletedCount > 0;
     }
 }

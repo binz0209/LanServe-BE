@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LanServe.Domain.Entities;
+﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services
+namespace LanServe.Application.Interfaces.Services;
+
+public interface IUserProfileService
 {
-    public interface IUserProfileService
-    {
-        Task<UserProfile> CreateOrUpdateAsync(UserProfile profile);
-        Task<UserProfile?> GetByUserIdAsync(string userId);
-    }
+    Task<UserProfile?> GetByIdAsync(string id);
+    Task<UserProfile?> GetByUserIdAsync(string userId);
+    Task<UserProfile> CreateAsync(UserProfile entity);
+    Task<bool> UpdateAsync(string id, UserProfile entity);
+    Task<bool> DeleteAsync(string id);
 }

@@ -1,14 +1,17 @@
+// ===== Usings =====
 using System.Text;
-using LanServe.Application.Interfaces.Repositories;
-using LanServe.Application.Interfaces.Services;
-using LanServe.Application.Services;
-using LanServe.Infrastructure.Data;
-using LanServe.Infrastructure.Repositories;
-using LanServe.Infrastructure.Services;
-using LanServe.Infrastructure.Initialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
+using LanServe.Infrastructure.Data;
+using LanServe.Infrastructure.Initialization;
+using LanServe.Infrastructure.Repositories;
+using LanServe.Infrastructure.Services;          // JwtTokenService, v.v.
+
+using LanServe.Application.Interfaces.Repositories;
+using LanServe.Application.Interfaces.Services;
+using LanServe.Application.Services;             // UserService, v.v.
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -31,7 +34,9 @@ services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "LanServe API", Version = "v1" });
 
-    // JWT on Swagger
+    // 👇 DÙNG FULL NAME để tránh trùng (loại bỏ dấu '+'' của nested type)
+    c.CustomSchemaIds(t => t.FullName!.Replace('+', '.'));
+
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -43,11 +48,9 @@ services.AddSwaggerGen(c =>
         Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
     };
     c.AddSecurityDefinition("Bearer", securityScheme);
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        { securityScheme, Array.Empty<string>() }
-    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement { { securityScheme, Array.Empty<string>() } });
 });
+
 
 // ========== CORS (FE Vite) ==========
 const string CorsPolicy = "LanServeCors";
@@ -79,6 +82,7 @@ if (!string.IsNullOrWhiteSpace(jwtKey))
             };
         });
 }
+services.AddAuthorization();
 
 // ========== Repositories ==========
 services.AddScoped<IUserRepository>(sp =>
@@ -119,6 +123,7 @@ services.AddScoped<IPaymentService, PaymentService>();
 services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<INotificationService, NotificationService>();
 services.AddScoped<IReviewService, ReviewService>();
+services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 var app = builder.Build();
 
@@ -136,8 +141,8 @@ app.UseCors(CorsPolicy);
 if (!string.IsNullOrWhiteSpace(jwtKey))
 {
     app.UseAuthentication();
-    app.UseAuthorization();
 }
+app.UseAuthorization();
 
 app.MapControllers();
 

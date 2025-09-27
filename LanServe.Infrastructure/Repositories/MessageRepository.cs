@@ -1,38 +1,41 @@
-﻿using LanServe.Domain.Entities;
+﻿using LanServe.Application.Interfaces.Repositories;
+using LanServe.Domain.Entities;
 using MongoDB.Driver;
-using LanServe.Application.Interfaces.Repositories;
 
-namespace LanServe.Infrastructure.Repositories
+namespace LanServe.Infrastructure.Repositories;
+
+public class MessageRepository : IMessageRepository
 {
-    public class MessageRepository : GenericRepository<Message>, IMessageRepository
+    private readonly IMongoCollection<Message> _collection;
+
+    public MessageRepository(IMongoCollection<Message> collection)
     {
-        public MessageRepository(IMongoCollection<Message> collection) : base(collection) { }
+        _collection = collection;
+    }
 
-        // Giữ nguyên API hiện tại bạn đang dùng
-        public async Task<IEnumerable<Message>> GetConversationAsync(string conversationKey, int skip = 0, int limit = 50)
-        {
-            var cursor = await _collection.Find(m => m.ConversationKey == conversationKey)
-                                          .SortBy(m => m.CreatedAt)
-                                          .Skip(skip)
-                                          .Limit(limit)
-                                          .ToListAsync();
-            return cursor.AsEnumerable();
-        }
+    public async Task<IEnumerable<Message>> GetByConversationAsync(string conversationKey)
+        => await _collection.Find(x => x.ConversationKey == conversationKey)
+                            .SortBy(x => x.CreatedAt)
+                            .ToListAsync();
 
-        public async Task<int> CountUnreadAsync(string userId)
-        {
-            var count = await _collection.CountDocumentsAsync(m => m.ReceiverId == userId && !m.IsRead);
-            return (int)count;
-        }
+    public async Task<IEnumerable<Message>> GetByProjectAsync(string projectId)
+        => await _collection.Find(x => x.ProjectId == projectId)
+                            .SortBy(x => x.CreatedAt)
+                            .ToListAsync();
 
-        // >>>>>>> NEW: implement method đúng chữ ký mà interface đang yêu cầu
-        // Map 1-1 với ConversationKey (theo domain của bạn)
-        public async Task<IEnumerable<Message>> GetByConversationIdAsync(string conversationId)
-        {
-            var cursor = await _collection.Find(m => m.ConversationKey == conversationId)
-                                          .SortBy(m => m.CreatedAt)
-                                          .ToListAsync();
-            return cursor.AsEnumerable();
-        }
+    public async Task<Message?> GetByIdAsync(string id)
+        => await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+
+    public async Task<Message> InsertAsync(Message entity)
+    {
+        await _collection.InsertOneAsync(entity);
+        return entity;
+    }
+
+    public async Task<bool> MarkAsReadAsync(string id)
+    {
+        var update = Builders<Message>.Update.Set(x => x.IsRead, true);
+        var result = await _collection.UpdateOneAsync(x => x.Id == id, update);
+        return result.ModifiedCount > 0;
     }
 }
