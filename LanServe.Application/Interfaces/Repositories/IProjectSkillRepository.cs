@@ -5,4 +5,5 @@ namespace LanServe.Application.Interfaces.Repositories;
 public interface IProjectSkillRepository : IGenericRepository<ProjectSkill>
 {
     Task<IEnumerable<ProjectSkill>> GetByProjectAsync(string projectId);
+    Task<IReadOnlyList<ProjectSkill>> GetByProjectIdAsync(string projectId);
 }

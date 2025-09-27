@@ -28,7 +28,10 @@ namespace LanServe.Infrastructure.Services
             else
             {
                 profile.Id = existing.Id;
-                await _userProfileRepository.UpdateAsync(profile);
+                if (string.IsNullOrWhiteSpace(profile.Id))
+                    throw new ArgumentException("UserProfile.Id is required");
+
+                await _userProfileRepository.UpdateAsync(profile.Id, profile);
             }
             return profile;
         }

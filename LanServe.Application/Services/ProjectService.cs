@@ -28,7 +28,13 @@ namespace LanServe.Infrastructure.Services
 
         public async Task<IEnumerable<Project>> GetAllAsync() => await _projectRepository.GetAllAsync();
 
-        public async Task UpdateAsync(Project project) => await _projectRepository.UpdateAsync(project);
+        public async Task UpdateAsync(Project project)
+        {
+            if (string.IsNullOrWhiteSpace(project.Id))
+                throw new ArgumentException("Project.Id is required");
+
+            await _projectRepository.UpdateAsync(project.Id, project);
+        }
 
         public async Task DeleteAsync(string id) => await _projectRepository.DeleteAsync(id);
     }

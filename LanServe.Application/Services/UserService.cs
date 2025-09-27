@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
 using LanServe.Application.Interfaces.Repositories;
+using BCrypt.Net;
 
 namespace LanServe.Infrastructure.Services
 {

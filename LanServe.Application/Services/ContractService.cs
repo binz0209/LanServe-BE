@@ -28,7 +28,7 @@ namespace LanServe.Infrastructure.Services
 
         public async Task<IEnumerable<Contract>> GetAllAsync() => await _contractRepository.GetAllAsync();
 
-        public async Task UpdateAsync(Contract contract) => await _contractRepository.UpdateAsync(contract);
+        public async Task UpdateAsync(Contract contract)  => await _contractRepository.UpdateAsync(contract.Id, contract);
 
         public async Task DeleteAsync(string id) => await _contractRepository.DeleteAsync(id);
     }

@@ -6,64 +6,77 @@ using LanServe.Infrastructure.Repositories;
 using LanServe.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
-// Đăng ký OpenAPI (Swagger UI + OpenAPI 3)
-builder.Services.AddOpenApi();
+// Controllers
+services.AddControllers();
 
-// Đăng ký MongoDbContext (singleton để chia sẻ kết nối)
-builder.Services.AddSingleton<MongoDbContext>();
+// Swagger (OpenAPI cho .NET 8)
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
 
-// Đăng ký repositories
-builder.Services.AddScoped<IUserRepository>(sp =>
+// CORS: cho FE Vite chạy http://localhost:5173
+const string CorsPolicy = "LanServeCors";
+services.AddCors(opt =>
+{
+    opt.AddPolicy(CorsPolicy, p => p
+        .WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
+});
+
+// MongoDbContext (singleton để share connection)
+services.AddSingleton<MongoDbContext>();
+
+// Repositories
+services.AddScoped<IUserRepository>(sp =>
     new UserRepository(sp.GetRequiredService<MongoDbContext>().Users));
-builder.Services.AddScoped<IUserProfileRepository>(sp =>
+services.AddScoped<IUserProfileRepository>(sp =>
     new UserProfileRepository(sp.GetRequiredService<MongoDbContext>().UserProfiles));
-builder.Services.AddScoped<ICategoryRepository>(sp =>
+services.AddScoped<ICategoryRepository>(sp =>
     new CategoryRepository(sp.GetRequiredService<MongoDbContext>().Categories));
-builder.Services.AddScoped<ISkillRepository>(sp =>
+services.AddScoped<ISkillRepository>(sp =>
     new SkillRepository(sp.GetRequiredService<MongoDbContext>().Skills));
-builder.Services.AddScoped<IProjectRepository>(sp =>
+services.AddScoped<IProjectRepository>(sp =>
     new ProjectRepository(sp.GetRequiredService<MongoDbContext>().Projects));
-builder.Services.AddScoped<IProjectSkillRepository>(sp =>
+services.AddScoped<IProjectSkillRepository>(sp =>
     new ProjectSkillRepository(sp.GetRequiredService<MongoDbContext>().ProjectSkills));
-builder.Services.AddScoped<IProposalRepository>(sp =>
+services.AddScoped<IProposalRepository>(sp =>
     new ProposalRepository(sp.GetRequiredService<MongoDbContext>().Proposals));
-builder.Services.AddScoped<IContractRepository>(sp =>
+services.AddScoped<IContractRepository>(sp =>
     new ContractRepository(sp.GetRequiredService<MongoDbContext>().Contracts));
-builder.Services.AddScoped<IPaymentRepository>(sp =>
+services.AddScoped<IPaymentRepository>(sp =>
     new PaymentRepository(sp.GetRequiredService<MongoDbContext>().Payments));
-builder.Services.AddScoped<IMessageRepository>(sp =>
+services.AddScoped<IMessageRepository>(sp =>
     new MessageRepository(sp.GetRequiredService<MongoDbContext>().Messages));
-builder.Services.AddScoped<INotificationRepository>(sp =>
+services.AddScoped<INotificationRepository>(sp =>
     new NotificationRepository(sp.GetRequiredService<MongoDbContext>().Notifications));
-builder.Services.AddScoped<IReviewRepository>(sp =>
+services.AddScoped<IReviewRepository>(sp =>
     new ReviewRepository(sp.GetRequiredService<MongoDbContext>().Reviews));
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ISkillService, SkillService>();
-builder.Services.AddScoped<IProjectService, ProjectService>();
-builder.Services.AddScoped<IProjectSkillService, ProjectSkillService>();
-builder.Services.AddScoped<IProposalService, ProposalService>();
-builder.Services.AddScoped<IContractService, ContractService>();
-builder.Services.AddScoped<IPaymentService, PaymentService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
-
+// Services (Application)
+services.AddScoped<IUserService, UserService>();
+services.AddScoped<IUserProfileService, UserProfileService>();
+services.AddScoped<ICategoryService, CategoryService>();
+services.AddScoped<ISkillService, SkillService>();
+services.AddScoped<IProjectService, ProjectService>();
+services.AddScoped<IProjectSkillService, ProjectSkillService>();
+services.AddScoped<IProposalService, ProposalService>();
+services.AddScoped<IContractService, ContractService>();
+services.AddScoped<IPaymentService, PaymentService>();
+services.AddScoped<IMessageService, MessageService>();
+services.AddScoped<INotificationService, NotificationService>();
+services.AddScoped<IReviewService, ReviewService>();
 
 var app = builder.Build();
 
-// Cấu hình middleware
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi(); // Mở UI cho swagger.json
-}
+// Swagger UI (bật ở Dev hoặc tuỳ ý)
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseCors(CorsPolicy);
 
-// Map controllers (sau này bạn tạo controller thì sẽ tự expose API)
 app.MapControllers();
-
 app.Run();

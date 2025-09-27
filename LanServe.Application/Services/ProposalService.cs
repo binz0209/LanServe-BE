@@ -29,7 +29,13 @@ namespace LanServe.Infrastructure.Services
         public async Task<IEnumerable<Proposal>> GetByProjectIdAsync(string projectId)
             => await _proposalRepository.GetByProjectIdAsync(projectId);
 
-        public async Task UpdateAsync(Proposal proposal) => await _proposalRepository.UpdateAsync(proposal);
+        public async Task UpdateAsync(Proposal proposal)
+        {
+            if (string.IsNullOrWhiteSpace(proposal.Id))
+                throw new ArgumentException("Proposal.Id is required");
+
+            await _proposalRepository.UpdateAsync(proposal.Id, proposal);
+        }
 
         public async Task DeleteAsync(string id) => await _proposalRepository.DeleteAsync(id);
     }
