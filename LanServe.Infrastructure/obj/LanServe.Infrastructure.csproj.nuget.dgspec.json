@@ -231,9 +231,13 @@
               "target": "Package",
               "version": "[8.*, )"
             },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
             "MongoDB.Driver": {
               "target": "Package",
-              "version": "[2.25.*, )"
+              "version": "[3.5.0, )"
             }
           },
           "imports": [

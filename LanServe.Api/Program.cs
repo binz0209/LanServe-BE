@@ -1,35 +1,86 @@
+using System.Text;
 using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Application.Services;
 using LanServe.Infrastructure.Data;
 using LanServe.Infrastructure.Repositories;
 using LanServe.Infrastructure.Services;
+using LanServe.Infrastructure.Initialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
+var config = builder.Configuration;
 
-// Controllers
+// ========== Mongo Options + DbContext ==========
+services.Configure<MongoOptions>(config.GetSection("MongoDb"));
+services.AddSingleton<MongoDbContext>();
+
+// Initializer (tạo DB/collection/index khi app start)
+services.AddSingleton<IMongoInitializer, MongoInitializer>();
+services.AddHostedService<MongoInitializerHostedService>();
+
+// ========== Controllers ==========
 services.AddControllers();
 
-// Swagger (OpenAPI cho .NET 8)
+// ========== Swagger ==========
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "LanServe API", Version = "v1" });
 
-// CORS: cho FE Vite chạy http://localhost:5173
+    // JWT on Swagger
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter 'Bearer {token}'",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+    };
+    c.AddSecurityDefinition("Bearer", securityScheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { securityScheme, Array.Empty<string>() }
+    });
+});
+
+// ========== CORS (FE Vite) ==========
 const string CorsPolicy = "LanServeCors";
 services.AddCors(opt =>
 {
     opt.AddPolicy(CorsPolicy, p => p
-        .WithOrigins("http://localhost:5173")
+        .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials());
 });
 
-// MongoDbContext (singleton để share connection)
-services.AddSingleton<MongoDbContext>();
+// ========== JWT Authentication ==========
+var jwtKey = config["Jwt:Key"];
+if (!string.IsNullOrWhiteSpace(jwtKey))
+{
+    services
+        .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            options.RequireHttpsMetadata = false; // dev
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+                ValidateLifetime = true
+            };
+        });
+}
 
-// Repositories
+// ========== Repositories ==========
 services.AddScoped<IUserRepository>(sp =>
     new UserRepository(sp.GetRequiredService<MongoDbContext>().Users));
 services.AddScoped<IUserProfileRepository>(sp =>
@@ -55,7 +106,7 @@ services.AddScoped<INotificationRepository>(sp =>
 services.AddScoped<IReviewRepository>(sp =>
     new ReviewRepository(sp.GetRequiredService<MongoDbContext>().Reviews));
 
-// Services (Application)
+// ========== Services (Application) ==========
 services.AddScoped<IUserService, UserService>();
 services.AddScoped<IUserProfileService, UserProfileService>();
 services.AddScoped<ICategoryService, CategoryService>();
@@ -71,12 +122,23 @@ services.AddScoped<IReviewService, ReviewService>();
 
 var app = builder.Build();
 
-// Swagger UI (bật ở Dev hoặc tuỳ ý)
+// ========== Middlewares ==========
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LanServe API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseHttpsRedirection();
 app.UseCors(CorsPolicy);
 
+if (!string.IsNullOrWhiteSpace(jwtKey))
+{
+    app.UseAuthentication();
+    app.UseAuthorization();
+}
+
 app.MapControllers();
+
 app.Run();
