@@ -126,6 +126,26 @@ services.AddScoped<IReviewService, ReviewService>();
 services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 var app = builder.Build();
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var ex = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>()?.Error;
+        // ghi log ra console để xem bằng "az webapp log tail"
+        Console.Error.WriteLine($"[ERR] {ex?.GetType().Name}: {ex?.Message}\n{ex?.StackTrace}");
+
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/problem+json";
+        await context.Response.WriteAsJsonAsync(new
+        {
+            type = "https://httpstatuses.com/500",
+            title = "Server Error",
+            status = 500,
+            detail = ex?.Message,
+            traceId = context.TraceIdentifier
+        });
+    });
+});
 
 // ========== Middlewares ==========
 app.UseSwagger();
