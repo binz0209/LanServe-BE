@@ -17,6 +17,11 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 
+Console.WriteLine("==== App starting... ====");
+Console.WriteLine($"MongoDb:DbName = {config["MongoDb:DbName"]}");
+Console.WriteLine($"MongoDb:ConnectionString = {(string.IsNullOrEmpty(config["MongoDb:ConnectionString"]) ? "NULL" : "FOUND")}");
+Console.WriteLine("=========================");
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();   // 👈 bắt buộc để log ra stdout/stderr cho az webapp log tail
 
