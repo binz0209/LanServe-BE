@@ -17,6 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();   // 👈 bắt buộc để log ra stdout/stderr cho az webapp log tail
+
 // ========== Mongo Options + DbContext ==========
 services.Configure<MongoOptions>(config.GetSection("MongoDb"));
 services.AddSingleton<MongoDbContext>();
