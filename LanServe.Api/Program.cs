@@ -67,10 +67,18 @@ const string CorsPolicy = "LanServeCors";
 services.AddCors(opt =>
 {
     opt.AddPolicy(CorsPolicy, p => p
-        .WithOrigins("http://localhost:5173", "http://127.0.0.1:5173")
+        .WithOrigins(
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "https://localhost:5173",
+            "https://127.0.0.1:5173"
+        // Nếu dùng IPv6 trên Windows:
+        // "http://[::1]:5173", "https://[::1]:5173"
+        )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials());
+        .AllowCredentials() // dùng Authorization header vẫn OK
+    );
 });
 
 // ========== JWT Authentication ==========
@@ -181,6 +189,17 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "LanServe API v1");
     c.RoutePrefix = "swagger";
+});
+
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var urls = app.Urls; // IUrlCollection
+    Console.WriteLine("==== LanServe API is running on: ====");
+    foreach (var url in urls)
+    {
+        Console.WriteLine(url);
+    }
+    Console.WriteLine("=====================================");
 });
 
 app.UseHttpsRedirection();

@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<!-- Dùng phiên bản .NET 8 tương ứng -->
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
+		<PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.3.0" />
 		<!-- Gói này bám ASP.NET Core 8, không dùng 9.x -->
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.*" />
 		<!-- Swashbuckle bản 6.x là tương thích .NET 8 -->
