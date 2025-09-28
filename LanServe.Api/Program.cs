@@ -13,6 +13,8 @@ using LanServe.Application.Interfaces.Repositories;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Application.Services;             // UserService, v.v.
 
+using Microsoft.AspNetCore.Diagnostics;
+
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
@@ -154,6 +156,24 @@ app.UseExceptionHandler(errorApp =>
         });
     });
 });
+
+app.UseExceptionHandler("/__error");
+app.Map("/__error", (HttpContext http, ILoggerFactory lf) =>
+{
+    var ex = http.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+    // Unwrap toàn bộ inner exceptions
+    var msgs = new List<string>();
+    for (var e = ex; e != null; e = e.InnerException) msgs.Add(e.GetType().FullName + ": " + e.Message);
+
+    lf.CreateLogger("Global").LogError(ex, "Unhandled exception");
+
+    return Results.Problem(
+        title: "Server error",
+        detail: string.Join(" => ", msgs),  // <<< xem nguyên nhân thật ở đây
+        statusCode: StatusCodes.Status500InternalServerError);
+});
+
 
 // ========== Middlewares ==========
 app.UseSwagger();
