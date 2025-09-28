@@ -22,7 +22,7 @@ builder.Logging.AddConsole();   // 👈 bắt buộc để log ra stdout/stderr 
 
 // ========== Mongo Options + DbContext ==========
 services.Configure<MongoOptions>(config.GetSection("MongoDb"));
-services.AddScoped<MongoDbContext>();
+services.AddSingleton<MongoDbContext>();
 
 // Initializer (tạo DB/collection/index khi app start)
 services.AddSingleton<IMongoInitializer, MongoInitializer>();
