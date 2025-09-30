@@ -12,4 +12,15 @@ public interface IMessageService
 
     Task<Message> SendAsync(Message dto);
     Task<bool> MarkAsReadAsync(string id);
+    Task<Message> CreateProposalMessageAsync(
+        string projectId,
+        string proposalId,
+        string clientId,
+        string freelancerId,
+        string projectTitle,
+        string clientName,
+        string freelancerName,
+        string coverLetter,
+        decimal? bidAmount
+    );
 }

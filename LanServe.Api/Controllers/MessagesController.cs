@@ -1,10 +1,12 @@
 ﻿// LanServe.Api/Controllers/MessagesController.cs
+using LanServe.Application.DTOs.Messages;
 using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace LanServe.Api.Controllers;
 
@@ -100,4 +102,34 @@ public class MessagesController : ControllerBase
     [HttpPost("{id}/read")]
     public async Task<IActionResult> MarkRead(string id)
         => Ok(await _svc.MarkAsReadAsync(id));
+
+    [Authorize(Roles = "User,Admin")]
+    [HttpPost("proposal")]
+    public async Task<IActionResult> CreateProposalMessage([FromBody] ProposalMessageCreateDto dto)
+    {
+        Console.WriteLine("== CreateProposalMessage payload ==");
+        Console.WriteLine(JsonSerializer.Serialize(dto));
+
+        if (string.IsNullOrWhiteSpace(dto.ProjectId) ||
+            string.IsNullOrWhiteSpace(dto.ProposalId) ||
+            string.IsNullOrWhiteSpace(dto.ClientId) ||
+            string.IsNullOrWhiteSpace(dto.FreelancerId))
+        {
+            return BadRequest(new { message = "Missing required fields (ProjectId/ProposalId/ClientId/FreelancerId)." });
+        }
+
+        var msg = await _svc.CreateProposalMessageAsync(
+            dto.ProjectId,
+            dto.ProposalId,
+            dto.ClientId,
+            dto.FreelancerId,
+            dto.ProjectTitle ?? string.Empty,
+            dto.ClientName ?? string.Empty,
+            dto.FreelancerName ?? string.Empty,
+            dto.CoverLetter ?? string.Empty,
+            dto.BidAmount
+        );
+
+        return Ok(msg);
+    }
 }

@@ -1,12 +1,18 @@
 ﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Repositories;
-
-public interface IProjectSkillRepository
+namespace LanServe.Application.Interfaces.Repositories
 {
-    Task<IEnumerable<ProjectSkill>> GetByProjectIdAsync(string projectId);
-    Task<IEnumerable<ProjectSkill>> GetBySkillIdAsync(string skillId);
-    Task<ProjectSkill?> GetByIdAsync(string id);
-    Task<ProjectSkill> InsertAsync(ProjectSkill entity);
-    Task<bool> DeleteAsync(string id);
+    public interface IProjectSkillRepository
+    {
+        Task<ProjectSkill> CreateAsync(ProjectSkill entity);
+        Task<bool> DeleteAsync(string id);
+
+        Task<IReadOnlyList<ProjectSkill>> GetByProjectIdAsync(string projectId);
+        Task<IReadOnlyList<ProjectSkill>> GetBySkillIdAsync(string skillId);
+
+        Task<bool> ExistsAsync(string projectId, string skillId);
+
+        // Tùy chọn: sync 1 shot (xóa cái thừa, thêm cái thiếu) theo danh sách skillIds
+        Task<(int added, int removed)> SyncForProjectAsync(string projectId, IEnumerable<string> skillIds);
+    }
 }

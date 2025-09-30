@@ -1,12 +1,16 @@
 ﻿using LanServe.Domain.Entities;
 
-namespace LanServe.Application.Interfaces.Services;
-
-public interface IProjectSkillService
+namespace LanServe.Application.Interfaces.Services
 {
-    Task<IEnumerable<ProjectSkill>> GetByProjectIdAsync(string projectId);
-    Task<IEnumerable<ProjectSkill>> GetBySkillIdAsync(string skillId);
-    Task<ProjectSkill?> GetByIdAsync(string id);
-    Task<ProjectSkill> CreateAsync(ProjectSkill entity);
-    Task<bool> DeleteAsync(string id);
+    public interface IProjectSkillService
+    {
+        Task<ProjectSkill> CreateAsync(ProjectSkill dto);
+        Task<bool> DeleteAsync(string id);
+
+        Task<IReadOnlyList<ProjectSkill>> GetByProjectIdAsync(string projectId);
+        Task<IReadOnlyList<ProjectSkill>> GetBySkillIdAsync(string skillId);
+
+        // optional: sync
+        Task<(int added, int removed)> SyncForProjectAsync(string projectId, IEnumerable<string> skillIds);
+    }
 }
