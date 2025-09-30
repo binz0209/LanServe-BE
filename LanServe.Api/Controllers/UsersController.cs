@@ -41,4 +41,14 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id) => Ok(await _svc.DeleteAsync(id));
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await _svc.GetAllAsync();
+        // chỉ trả về thông tin cơ bản để chat
+        var list = users.Select(u => new { u.Id, u.FullName, u.Email }).ToList();
+        return Ok(list);
+    }
 }

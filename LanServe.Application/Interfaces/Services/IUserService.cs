@@ -10,4 +10,5 @@ public interface IUserService
     Task<User?> ValidateUserAsync(string email, string password);
     Task<bool> UpdateAsync(string id, User user);
     Task<bool> DeleteAsync(string id);
+    Task<IEnumerable<User>> GetAllAsync();
 }

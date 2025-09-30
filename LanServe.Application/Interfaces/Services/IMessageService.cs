@@ -1,12 +1,15 @@
-﻿using LanServe.Domain.Entities;
-
-namespace LanServe.Application.Interfaces.Services;
+﻿// LanServe.Application/Interfaces/Services/IMessageService.cs
+using LanServe.Domain.Entities;
 
 public interface IMessageService
 {
     Task<IEnumerable<Message>> GetByConversationAsync(string conversationKey);
     Task<IEnumerable<Message>> GetByProjectAsync(string projectId);
-    Task<Message?> GetByIdAsync(string id);
-    Task<Message> SendAsync(Message entity);
+    Task<IEnumerable<Message>> GetByUserAsync(string userId);
+
+    Task<IEnumerable<(string ConversationKey, string PartnerId, string LastMessage, DateTime LastAt, int UnreadCount)>>
+        GetConversationsForUserAsync(string userId);
+
+    Task<Message> SendAsync(Message dto);
     Task<bool> MarkAsReadAsync(string id);
 }

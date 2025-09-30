@@ -9,4 +9,5 @@ public interface IUserRepository
     Task<User> InsertAsync(User entity);
     Task<bool> UpdateAsync(User entity);
     Task<bool> DeleteAsync(string id);
+    Task<IEnumerable<User>> GetAllAsync();
 }

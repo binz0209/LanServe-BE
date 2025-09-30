@@ -4,6 +4,8 @@ namespace LanServe.Application.Interfaces.Services;
 
 public interface IProjectService
 {
+    Task<IEnumerable<Project>> GetAllAsync();
+    Task<IEnumerable<Project>> GetByStatusAsync(string status);
     Task<Project?> GetByIdAsync(string id);
     Task<IEnumerable<Project>> GetByOwnerIdAsync(string ownerId);
     Task<IEnumerable<Project>> GetOpenProjectsAsync();

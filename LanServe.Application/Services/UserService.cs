@@ -53,4 +53,8 @@ public class UserService : IUserService
 
     public Task<bool> DeleteAsync(string id)
         => _repo.DeleteAsync(id);
+
+    public async Task<IEnumerable<User>> GetAllAsync()
+    => await _repo.GetAllAsync();
+
 }

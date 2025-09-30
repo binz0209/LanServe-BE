@@ -43,4 +43,13 @@ public class ProjectRepository : IProjectRepository
         var result = await _collection.DeleteOneAsync(x => x.Id == id);
         return result.DeletedCount > 0;
     }
+
+    public async Task<IEnumerable<Project>> GetByStatusAsync(string status)
+    {
+        return await _collection.Find(x => x.Status == status).ToListAsync();
+    }
+    public async Task<IEnumerable<Project>> GetAllAsync()
+    {
+        return await _collection.Find(_ => true).ToListAsync();
+    }
 }

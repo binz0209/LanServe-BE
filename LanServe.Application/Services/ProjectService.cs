@@ -12,6 +12,9 @@ public class ProjectService : IProjectService
     {
         _repo = repo;
     }
+    public Task<IEnumerable<Project>> GetAllAsync() => _repo.GetAllAsync();
+
+    public Task<IEnumerable<Project>> GetByStatusAsync(string status) => _repo.GetByStatusAsync(status);
 
     public Task<Project?> GetByIdAsync(string id)
         => _repo.GetByIdAsync(id);
