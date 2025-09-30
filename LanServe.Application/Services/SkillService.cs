@@ -33,4 +33,8 @@ public class SkillService : ISkillService
 
     public Task<bool> DeleteAsync(string id)
         => _repo.DeleteAsync(id);
+    public async Task<List<Skill>> GetByIdsAsync(List<string> ids)
+    {
+        return await _repo.GetByIdsAsync(ids);
+    }
 }

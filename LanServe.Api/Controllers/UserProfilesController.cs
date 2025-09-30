@@ -16,9 +16,14 @@ public class UserProfilesController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id) => Ok(await _svc.GetByIdAsync(id));
 
-    [Authorize]
+    [Authorize] 
     [HttpGet("by-user/{userId}")]
-    public async Task<IActionResult> GetByUser(string userId) => Ok(await _svc.GetByUserIdAsync(userId));
+    public async Task<IActionResult> GetByUser(string userId)   
+    {
+        var profile = await _svc.GetByUserIdAsync(userId);
+        if (profile == null) return NotFound();
+        return Ok(profile);
+    }
 
     [Authorize]
     [HttpPost]

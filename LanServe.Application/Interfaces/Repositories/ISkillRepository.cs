@@ -10,4 +10,5 @@ public interface ISkillRepository
     Task<Skill> InsertAsync(Skill entity);
     Task<bool> UpdateAsync(Skill entity);
     Task<bool> DeleteAsync(string id);
+    Task<List<Skill>> GetByIdsAsync(List<string> ids);
 }
