@@ -24,12 +24,14 @@ public class MessageService : IMessageService
 
     public async Task<Message> SendAsync(Message dto)
     {
+        // ✅ CHUẨN HOÁ conversationKey nếu thiếu
         if (string.IsNullOrWhiteSpace(dto.ConversationKey)
             && !string.IsNullOrWhiteSpace(dto.SenderId)
             && !string.IsNullOrWhiteSpace(dto.ReceiverId))
         {
-            dto.ConversationKey = BuildConversationKey(dto.SenderId, dto.ReceiverId);
+            dto.ConversationKey = BuildConversationKey(dto.ProjectId, dto.SenderId, dto.ReceiverId);
         }
+
         dto.CreatedAt = dto.CreatedAt == default ? DateTime.UtcNow : dto.CreatedAt;
         dto.IsRead = false;
 
@@ -38,11 +40,13 @@ public class MessageService : IMessageService
 
     public Task<bool> MarkAsReadAsync(string id) => _repo.MarkAsReadAsync(id);
 
-    private static string BuildConversationKey(string a, string b)
+    // ✅ CHUẨN: {projectId ?? "null"}:{min(sender,receiver)}:{max(sender,receiver)}
+    private static string BuildConversationKey(string? projectId, string a, string b)
     {
-        var arr = new[] { a, b };
-        Array.Sort(arr, StringComparer.Ordinal);
-        return $"{arr[0]}_{arr[1]}";
+        var u1 = string.CompareOrdinal(a, b) <= 0 ? a : b;
+        var u2 = ReferenceEquals(u1, a) ? b : a;
+        var pid = string.IsNullOrWhiteSpace(projectId) ? "null" : projectId;
+        return $"{pid}:{u1}:{u2}";
     }
     public async Task<Message> CreateProposalMessageAsync(
         string projectId,

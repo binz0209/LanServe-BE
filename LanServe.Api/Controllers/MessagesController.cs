@@ -66,35 +66,51 @@ public class MessagesController : ControllerBase
     public async Task<IActionResult> ByProject(string projectId)
         => Ok(await _svc.GetByProjectAsync(projectId));
 
+    public class SendMessageRequest
+    {
+        public string? ConversationKey { get; set; }    // optional
+        public string ReceiverId { get; set; } = null!;
+        public string Text { get; set; } = null!;
+        public string? ProjectId { get; set; }          // optional
+    }
+
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult> Send([FromBody] Dictionary<string, object> body)
+    public async Task<IActionResult> Send([FromBody] SendMessageRequest body)
     {
         var senderId = GetUserId();
         if (string.IsNullOrEmpty(senderId)) return Unauthorized();
 
-        // Lấy receiverId & text từ payload
-        var receiverId = body.ContainsKey("receiverId") ? body["receiverId"]?.ToString() : null;
-        var text = body.ContainsKey("text") ? body["text"]?.ToString() : null;
-
-        if (string.IsNullOrWhiteSpace(receiverId) || string.IsNullOrWhiteSpace(text))
+        if (string.IsNullOrWhiteSpace(body.ReceiverId) || string.IsNullOrWhiteSpace(body.Text))
             return BadRequest("receiverId và text là bắt buộc.");
+
+        // Nếu FE truyền sẵn conversationKey thì dùng luôn; nếu không -> build chuẩn 3 phần
+        var convKey = !string.IsNullOrWhiteSpace(body.ConversationKey)
+            ? body.ConversationKey!
+            : BuildKey(body.ProjectId, senderId, body.ReceiverId);
 
         var msg = new Message
         {
-            Id = ObjectId.GenerateNewId().ToString(), // Mongo sẽ dùng
             SenderId = senderId,
-            ReceiverId = receiverId!,
-            Text = text!,
+            ReceiverId = body.ReceiverId,
+            ProjectId = string.IsNullOrWhiteSpace(body.ProjectId) ? null : body.ProjectId,
+            Text = body.Text,
             CreatedAt = DateTime.UtcNow,
             IsRead = false,
-            ConversationKey = string.Compare(senderId, receiverId, StringComparison.Ordinal) < 0
-                ? $"{senderId}:{receiverId}"
-                : $"{receiverId}:{senderId}"
+            ConversationKey = convKey
         };
 
         var saved = await _svc.SendAsync(msg);
         return Ok(saved);
+
+        // local helper: đảm bảo cùng format với Service/Repo
+        static string BuildKey(string? projectId, string a, string b)
+        {
+            var u1 = string.CompareOrdinal(a, b) <= 0 ? a : b;
+            var u2 = ReferenceEquals(u1, a) ? b : a;
+            var pid = string.IsNullOrWhiteSpace(projectId) ? "null" : projectId;
+            return $"{pid}:{u1}:{u2}";
+        }
     }
 
 
