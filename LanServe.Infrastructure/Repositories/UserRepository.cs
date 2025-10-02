@@ -13,6 +13,9 @@ public class UserRepository : IUserRepository
         _collection = collection;
     }
 
+    public async Task<IEnumerable<User>> GetAllAsync()
+        => await _collection.Find(_ => true).ToListAsync();
+
     public async Task<User?> GetByIdAsync(string id)
         => await _collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 

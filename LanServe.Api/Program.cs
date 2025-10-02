@@ -1,19 +1,17 @@
 // ===== Usings =====
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-
+using LanServe.Application.Interfaces.Repositories;
+using LanServe.Application.Interfaces.Services;
+using LanServe.Application.Services;             // UserService, v.v.
 using LanServe.Infrastructure.Data;
 using LanServe.Infrastructure.Initialization;
 using LanServe.Infrastructure.Repositories;
 using LanServe.Infrastructure.Services;          // JwtTokenService, v.v.
-
-using LanServe.Application.Interfaces.Repositories;
-using LanServe.Application.Interfaces.Services;
-using LanServe.Application.Services;             // UserService, v.v.
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -96,7 +94,8 @@ if (!string.IsNullOrWhiteSpace(jwtKey))
                 ValidateAudience = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                ValidateLifetime = true
+                ValidateLifetime = true,
+                RoleClaimType = ClaimTypes.Role
             };
         });
 }
