@@ -10,4 +10,5 @@ public interface IUserRepository
     Task<bool> UpdateAsync(User entity);
     Task<bool> DeleteAsync(string id);
     Task<IEnumerable<User>> GetAllAsync();
+    Task<bool> UpdatePasswordAsync(string id, string hashedPassword);
 }

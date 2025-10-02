@@ -57,4 +57,23 @@ public class UserService : IUserService
     public async Task<IEnumerable<User>> GetAllAsync()
     => await _repo.GetAllAsync();
 
+    public async Task<(bool Succeeded, string[] Errors)> ChangePasswordAsync(string userId, string oldPassword, string newPassword)
+    {
+        var user = await _repo.GetByIdAsync(userId);
+        if (user == null)
+            return (false, new[] { "User not found" });
+
+        var verify = BCrypt.Net.BCrypt.Verify(oldPassword, user.PasswordHash);
+        if (!verify)
+            return (false, new[] { "Old password is incorrect" });
+
+        var newHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+
+        var updated = await _repo.UpdatePasswordAsync(userId, newHash);
+
+        return updated
+            ? (true, Array.Empty<string>())
+            : (false, new[] { "Failed to update password" });
+    }
+
 }

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\EXE\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj": {}
+    "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj": {}
   },
   "projects": {
-    "D:\\EXE\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj": {
+    "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\EXE\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj",
+        "projectUniqueName": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj",
         "projectName": "LanServe.Api",
-        "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj",
-        "packagesPath": "C:\\Users\\binzd\\.nuget\\packages\\",
-        "outputPath": "D:\\EXE\\LanServe-BE\\LanServe.Api\\obj\\",
+        "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj",
+        "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Api\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\binzd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,21 +26,21 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\ProgramData\\UiPath\\Components": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj"
               },
-              "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
               },
-              "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj"
               }
             }
           }
@@ -88,6 +88,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -96,24 +114,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
+    "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj",
+        "projectUniqueName": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj",
         "projectName": "LanServe.Application",
-        "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj",
-        "packagesPath": "C:\\Users\\binzd\\.nuget\\packages\\",
-        "outputPath": "D:\\EXE\\LanServe-BE\\LanServe.Application\\obj\\",
+        "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj",
+        "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\binzd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -122,15 +140,15 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\ProgramData\\UiPath\\Components": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
               }
             }
           }
@@ -174,29 +192,43 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
+    "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj",
         "projectName": "LanServe.Domain",
-        "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj",
-        "packagesPath": "C:\\Users\\binzd\\.nuget\\packages\\",
-        "outputPath": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\obj\\",
+        "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj",
+        "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\binzd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -205,7 +237,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\ProgramData\\UiPath\\Components": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -245,29 +277,43 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj": {
+    "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj",
         "projectName": "LanServe.Infrastructure",
-        "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj",
-        "packagesPath": "C:\\Users\\binzd\\.nuget\\packages\\",
-        "outputPath": "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\obj\\",
+        "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\binzd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -276,18 +322,18 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\ProgramData\\UiPath\\Components": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj"
               },
-              "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
               }
             }
           }
@@ -347,29 +393,43 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\EXE\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj": {
+    "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\EXE\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj",
         "projectName": "LanServe.Tests",
-        "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj",
-        "packagesPath": "C:\\Users\\binzd\\.nuget\\packages\\",
-        "outputPath": "D:\\EXE\\LanServe-BE\\LanServe.Tests\\obj\\",
+        "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Tests\\LanServe.Tests.csproj",
+        "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\binzd\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -378,24 +438,24 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\ProgramData\\UiPath\\Components": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\EXE\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Api\\LanServe.Api.csproj"
               },
-              "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Application\\LanServe.Application.csproj"
               },
-              "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Domain\\LanServe.Domain.csproj"
               },
-              "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj": {
-                "projectPath": "D:\\EXE\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj"
+              "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\ACER\\source\\repos\\LanServe-BE\\LanServe.Infrastructure\\LanServe.Infrastructure.csproj"
               }
             }
           }
@@ -443,12 +503,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.20, 8.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.414/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

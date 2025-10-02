@@ -11,4 +11,5 @@ public interface IUserService
     Task<bool> UpdateAsync(string id, User user);
     Task<bool> DeleteAsync(string id);
     Task<IEnumerable<User>> GetAllAsync();
+    Task<(bool Succeeded, string[] Errors)> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
 }

@@ -51,4 +51,22 @@ public class UsersController : ControllerBase
         var list = users.Select(u => new { u.Id, u.FullName, u.Email }).ToList();
         return Ok(list);
     }
+
+
+    public record ChangePasswordRequest(string OldPassword, string NewPassword);
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req)
+    {
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null) return Unauthorized();
+
+        var result = await _svc.ChangePasswordAsync(userId, req.OldPassword, req.NewPassword);
+
+        if (!result.Succeeded)
+            return BadRequest(new { message = "Password change failed", errors = result.Errors });
+
+        return Ok(new { message = "Password changed successfully" });
+    }
 }

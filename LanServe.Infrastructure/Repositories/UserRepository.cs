@@ -39,4 +39,11 @@ public class UserRepository : IUserRepository
         var result = await _collection.DeleteOneAsync(x => x.Id == id);
         return result.DeletedCount > 0;
     }
+
+    public async Task<bool> UpdatePasswordAsync(string id, string hashedPassword)
+    {
+        var update = Builders<User>.Update.Set(u => u.PasswordHash, hashedPassword);
+        var result = await _collection.UpdateOneAsync(u => u.Id == id, update);
+        return result.ModifiedCount > 0;
+    }
 }
