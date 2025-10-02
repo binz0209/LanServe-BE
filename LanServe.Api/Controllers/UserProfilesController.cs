@@ -2,6 +2,7 @@
 using LanServe.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LanServe.Api.Controllers;
 
@@ -24,6 +25,7 @@ public class UserProfilesController : ControllerBase
         if (profile == null) return NotFound();
         return Ok(profile);
     }
+        
 
     [Authorize]
     [HttpPost]
@@ -31,7 +33,20 @@ public class UserProfilesController : ControllerBase
 
     [Authorize]
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] UserProfile dto) => Ok(await _svc.UpdateAsync(id, dto));
+    public async Task<IActionResult> Update(string id, [FromBody] UserProfile dto)
+    {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(currentUserId)) return Unauthorized();
+
+        var profile = await _svc.GetByIdAsync(id);
+        if (profile == null) return NotFound();
+
+        if (profile.UserId != currentUserId && !User.IsInRole("Admin"))
+            return Forbid();
+
+        var updated = await _svc.UpdateAsync(id, dto);
+        return Ok(updated);
+    }
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]

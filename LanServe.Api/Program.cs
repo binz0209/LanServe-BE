@@ -75,7 +75,7 @@ services.AddCors(opt =>
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
-        //.AllowCredentials() // dùng Authorization header vẫn OK
+        .AllowCredentials() // dùng Authorization header vẫn OK
     );
 });
 
@@ -164,6 +164,7 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
+app.UseExceptionHandler("/__error");
 app.Map("/__error", (HttpContext http, ILoggerFactory lf) =>
 {
     var ex = http.Features.Get<IExceptionHandlerFeature>()?.Error;
