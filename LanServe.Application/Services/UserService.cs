@@ -8,10 +8,12 @@ namespace LanServe.Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository _repo;
+    private readonly IUserProfileService _profiles;
 
-    public UserService(IUserRepository repo)
+    public UserService(IUserRepository repo, IUserProfileService profiles)
     {
         _repo = repo;
+        _profiles = profiles;
     }
 
     public Task<User?> GetByIdAsync(string id)
@@ -34,7 +36,25 @@ public class UserService : IUserService
             CreatedAt = DateTime.UtcNow
         };
 
-        return await _repo.InsertAsync(user);
+        var createdUser = await _repo.InsertAsync(user);
+
+        // ✅ Tạo UserProfile rỗng ngay sau khi đăng ký
+        var emptyProfile = new UserProfile
+        {
+            UserId = createdUser.Id,
+            Title = string.Empty,
+            Bio = string.Empty,
+            Location = string.Empty,
+            HourlyRate = null,
+            Languages = new List<string>(),
+            Certifications = new List<string>(),
+            SkillIds = new List<string>(),
+            CreatedAt = DateTime.UtcNow
+        };
+
+        await _profiles.CreateAsync(emptyProfile);
+
+        return createdUser;
     }
 
     public async Task<User?> ValidateUserAsync(string email, string password)
@@ -76,4 +96,12 @@ public class UserService : IUserService
             : (false, new[] { "Failed to update password" });
     }
 
+    public async Task UpdatePasswordAsync(string userId, string newPassword)
+    {
+        var user = await _repo.GetByIdAsync(userId);
+        if (user == null) throw new Exception("User not found");
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await _repo.UpdateAsync(user);
+    }
 }
