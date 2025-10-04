@@ -22,8 +22,8 @@ public class UsersController : ControllerBase
         var me = await _svc.GetByIdAsync(id);
         return Ok(me);
     }
-
-    [Authorize(Roles = "Admin")]
+    [Authorize]
+    //[Authorize(Roles = "Admin")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(string id) => Ok(await _svc.GetByIdAsync(id));
 

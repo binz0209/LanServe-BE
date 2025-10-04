@@ -33,4 +33,9 @@ public class UserProfileService : IUserProfileService
 
     public Task<bool> DeleteAsync(string id)
         => _repo.DeleteAsync(id);
+
+    public async Task<IEnumerable<UserProfile>> GetAllAsync() { 
+        return await _repo.GetAllAsync();
+
+    }
 }

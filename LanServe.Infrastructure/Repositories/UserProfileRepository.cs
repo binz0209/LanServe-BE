@@ -36,4 +36,8 @@ public class UserProfileRepository : IUserProfileRepository
         var result = await _collection.DeleteOneAsync(x => x.Id == id);
         return result.DeletedCount > 0;
     }
+    public async Task<IEnumerable<UserProfile>> GetAllAsync()
+    {
+        return await _collection.Find(_ => true).ToListAsync();
+    }
 }

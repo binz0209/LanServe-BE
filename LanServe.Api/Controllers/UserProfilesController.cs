@@ -51,4 +51,14 @@ public class UserProfilesController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id) => Ok(await _svc.DeleteAsync(id));
+    [Authorize]
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAll()
+    {
+        var profiles = await _svc.GetAllAsync();
+        return Ok(profiles);
+    }
+
+
 }
