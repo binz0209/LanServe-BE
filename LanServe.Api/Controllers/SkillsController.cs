@@ -30,4 +30,15 @@ public class SkillsController : ControllerBase
 
     [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")] public async Task<IActionResult> Delete(string id) => Ok(await _svc.DeleteAsync(id));
+
+    [AllowAnonymous]
+    [HttpPost("resolve")]
+    public async Task<IActionResult> Resolve([FromBody] List<string> ids)
+    {
+        if (ids == null || ids.Count == 0) return Ok(new List<object>());
+
+        var skills = await _svc.GetByIdsAsync(ids);
+        return Ok(skills.Select(s => new { s.Id, s.Name }));
+    }
+
 }

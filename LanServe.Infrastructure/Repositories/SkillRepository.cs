@@ -1,5 +1,6 @@
 ﻿using LanServe.Application.Interfaces.Repositories;
 using LanServe.Domain.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace LanServe.Infrastructure.Repositories;
@@ -38,5 +39,12 @@ public class SkillRepository : ISkillRepository
     {
         var result = await _collection.DeleteOneAsync(x => x.Id == id);
         return result.DeletedCount > 0;
+    }
+
+    public async Task<List<Skill>> GetByIdsAsync(List<string> ids)
+    {
+        var objectIds = ids.Select(id => ObjectId.Parse(id)).ToList();
+        var filter = Builders<Skill>.Filter.In(s => s.Id, objectIds.Select(o => o.ToString()));
+        return await _collection.Find(filter).ToListAsync();
     }
 }

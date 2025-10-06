@@ -9,4 +9,5 @@ public interface IUserProfileService
     Task<UserProfile> CreateAsync(UserProfile entity);
     Task<bool> UpdateAsync(string id, UserProfile entity);
     Task<bool> DeleteAsync(string id);
+    Task<IEnumerable<UserProfile>> GetAllAsync();
 }

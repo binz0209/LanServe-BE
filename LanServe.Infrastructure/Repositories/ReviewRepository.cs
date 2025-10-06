@@ -22,9 +22,9 @@ public class ReviewRepository : IReviewRepository
                             .ToListAsync();
 
     public async Task<IEnumerable<Review>> GetByUserAsync(string userId)
-        => await _collection.Find(x => x.ReviewerId == userId || x.RevieweeId == userId)
-                            .SortByDescending(x => x.CreatedAt)
-                            .ToListAsync();
+      => await _collection.Find(x => x.RevieweeId == userId)
+                          .SortByDescending(x => x.CreatedAt)
+                          .ToListAsync();
 
     public async Task<Review> InsertAsync(Review entity)
     {

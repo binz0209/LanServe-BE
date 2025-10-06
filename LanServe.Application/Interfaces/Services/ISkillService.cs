@@ -10,4 +10,5 @@ public interface ISkillService
     Task<Skill> CreateAsync(Skill entity);
     Task<bool> UpdateAsync(string id, Skill entity);
     Task<bool> DeleteAsync(string id);
+    Task<List<Skill>> GetByIdsAsync(List<string> ids);
 }

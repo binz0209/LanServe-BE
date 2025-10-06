@@ -9,4 +9,5 @@ public interface IUserProfileRepository
     Task<UserProfile> InsertAsync(UserProfile entity);
     Task<bool> UpdateAsync(UserProfile entity);
     Task<bool> DeleteAsync(string id);
+    Task<IEnumerable<UserProfile>> GetAllAsync();
 }
