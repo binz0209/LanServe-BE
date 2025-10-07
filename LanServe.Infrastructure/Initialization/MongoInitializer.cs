@@ -1,4 +1,5 @@
-﻿using LanServe.Infrastructure.Data;
+﻿// LanServe.Infrastructure/Initialization/MongoInitializer.cs
+using LanServe.Infrastructure.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -21,11 +22,9 @@ public class MongoInitializer : IMongoInitializer
 
     public async Task InitializeAsync(CancellationToken ct = default)
     {
-        // 1) Ping
         await _ctx.Database.RunCommandAsync((Command<BsonDocument>)"{ ping: 1 }", cancellationToken: ct);
         _logger.LogInformation("Mongo ping OK on {Db}", _opt.DbName);
 
-        // 2) Create collections if missing
         var existing = await _ctx.Database.ListCollectionNames().ToListAsync(ct);
         async Task EnsureCollection(string name)
         {
@@ -36,10 +35,11 @@ public class MongoInitializer : IMongoInitializer
             }
         }
 
+        // Existing
         await EnsureCollection(_opt.Collections.Users);
         await EnsureCollection(_opt.Collections.UserProfiles);
         await EnsureCollection(_opt.Collections.Projects);
-        await EnsureCollection(_opt.Collections.ProjectSkills);   // 👈 THÊM DÒNG NÀY
+        await EnsureCollection(_opt.Collections.ProjectSkills);
         await EnsureCollection(_opt.Collections.Proposals);
         await EnsureCollection(_opt.Collections.Contracts);
         await EnsureCollection(_opt.Collections.Payments);
@@ -49,62 +49,45 @@ public class MongoInitializer : IMongoInitializer
         await EnsureCollection(_opt.Collections.Categories);
         await EnsureCollection(_opt.Collections.Skills);
 
-        // 3) Minimal indexes
+        // NEW
+        await EnsureCollection(_opt.Collections.Wallets);
+        await EnsureCollection(_opt.Collections.WalletTransactions);
 
-        // Users: unique email
-        var users = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.Users);
-        await users.Indexes.CreateOneAsync(
-            new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("email"),
-                new CreateIndexOptions { Unique = true, Name = "ux_users_email" }
-            ), cancellationToken: ct);
+        // ===== Indexes =====
 
-        // Projects: text + fields commonly filtered
-        var projects = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.Projects);
-        await projects.Indexes.CreateManyAsync(new[]
+        // Payments: unique vnp_TxnRef + search helpers
+        var payments = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.Payments);
+        await payments.Indexes.CreateManyAsync(new[]
         {
             new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Text("title").Text("description"),
-                new CreateIndexOptions { Name = "tx_projects_title_desc" }),
+                Builders<BsonDocument>.IndexKeys.Ascending("vnp_TxnRef"),
+                new CreateIndexOptions { Name = "ux_payments_vnp_TxnRef", Unique = true }),
             new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("categoryId"),
-                new CreateIndexOptions { Name = "ix_projects_categoryId" }),
+                Builders<BsonDocument>.IndexKeys.Ascending("userId").Ascending("createdAt"),
+                new CreateIndexOptions { Name = "ix_payments_user_created" }),
             new CreateIndexModel<BsonDocument>(
                 Builders<BsonDocument>.IndexKeys.Ascending("status"),
-                new CreateIndexOptions { Name = "ix_projects_status" }),
-            new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("ownerId"),
-                new CreateIndexOptions { Name = "ix_projects_ownerId" }),
-            new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("createdAt"),
-                new CreateIndexOptions { Name = "ix_projects_createdAt" })
+                new CreateIndexOptions { Name = "ix_payments_status" })
         }, cancellationToken: ct);
 
-        // ProjectSkills: tránh trùng 1 skill cho 1 project
-        var projectSkills = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.ProjectSkills);
-        await projectSkills.Indexes.CreateManyAsync(new[]
-        {
+        // Wallets: unique per user
+        var wallets = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.Wallets);
+        await wallets.Indexes.CreateOneAsync(
             new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("projectId").Ascending("skillId"),
-                new CreateIndexOptions { Name = "ux_projectskills_projectId_skillId", Unique = true }),
-            new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("projectId"),
-                new CreateIndexOptions { Name = "ix_projectskills_projectId" }),
-            new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("skillId"),
-                new CreateIndexOptions { Name = "ix_projectskills_skillId" })
-        }, cancellationToken: ct);
+                Builders<BsonDocument>.IndexKeys.Ascending("userId"),
+                new CreateIndexOptions { Name = "ux_wallets_userId", Unique = true }),
+            cancellationToken: ct);
 
-        // Messages: tối ưu thread & user lookup (tuỳ chọn)
-        var messages = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.Messages);
-        await messages.Indexes.CreateManyAsync(new[]
+        // WalletTransactions: filter by wallet, createdAt
+        var walletTxns = _ctx.Database.GetCollection<BsonDocument>(_opt.Collections.WalletTransactions);
+        await walletTxns.Indexes.CreateManyAsync(new[]
         {
             new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("conversationKey").Ascending("createdAt"),
-                new CreateIndexOptions { Name = "ix_messages_conversation_created" }),
+                Builders<BsonDocument>.IndexKeys.Ascending("walletId").Ascending("createdAt"),
+                new CreateIndexOptions { Name = "ix_wallettxns_wallet_created" }),
             new CreateIndexModel<BsonDocument>(
-                Builders<BsonDocument>.IndexKeys.Ascending("senderId").Ascending("receiverId").Ascending("createdAt"),
-                new CreateIndexOptions { Name = "ix_messages_participants_created" })
+                Builders<BsonDocument>.IndexKeys.Ascending("userId").Ascending("createdAt"),
+                new CreateIndexOptions { Name = "ix_wallettxns_user_created" })
         }, cancellationToken: ct);
 
         _logger.LogInformation("Mongo initialization finished for {Db}", _opt.DbName);

@@ -1,6 +1,4 @@
 ﻿using LanServe.Application.Interfaces.Services;
-using LanServe.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LanServe.Api.Controllers;
@@ -9,30 +7,45 @@ namespace LanServe.Api.Controllers;
 [Route("api/[controller]")]
 public class PaymentsController : ControllerBase
 {
-    private readonly IPaymentService _svc;
-    public PaymentsController(IPaymentService svc) { _svc = svc; }
+    private readonly IPaymentService _paymentService;
+    private readonly ILogger<PaymentsController> _logger;
+    private readonly IConfiguration _config;
 
-    [Authorize]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id) => Ok(await _svc.GetByIdAsync(id));
+    public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger,
+        IConfiguration config)
+    {
+        _paymentService = paymentService;
+        _logger = logger;
+        _config = config;
+    }
 
-    [Authorize]
-    [HttpGet("by-contract/{contractId}")]
-    public async Task<IActionResult> ByContract(string contractId) => Ok(await _svc.GetByContractIdAsync(contractId));
+    // 1) Tạo URL nạp tiền (topup) qua VNPAY
+    [HttpPost("topup")]
+    public async Task<IActionResult> CreateTopup([FromBody] TopupRequest req, CancellationToken ct)
+    {
+        // TODO: Lấy userId từ JWT ở thực tế; ở đây nhận từ body để dev/test
+        if (req.Amount <= 0) return BadRequest("Amount must be > 0");
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0";
+        var url = await _paymentService.CreateTopUpAsync(req.UserId, req.Amount, ip, ct);
+        return Ok(new { paymentUrl = url });
+    }
 
-    public record CheckoutDto(string ContractId, decimal Amount);
-    [Authorize]
-    [HttpPost("mock-checkout")]
-    public async Task<IActionResult> MockCheckout([FromBody] CheckoutDto dto)
-        => Ok(await _svc.MockCheckoutAsync(dto.ContractId, dto.Amount));
+    // 2) VNPAY Return URL
+    [HttpGet("vnpay-return")]
+    public async Task<IActionResult> VnPayReturn(CancellationToken ct)
+    {
+        var queryParams = Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString());
+        var (ok, redirectPath) = await _paymentService.HandleVnPayReturnAsync(queryParams, ct);
+        if (!ok) _logger.LogWarning("VNPAY return failed: {Query}", Request.QueryString.Value);
 
-    public record UpdateStatusDto(string Status);
-    [Authorize(Roles = "Admin")]
-    [HttpPut("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(string id, [FromBody] UpdateStatusDto dto)
-        => Ok(await _svc.UpdateStatusAsync(id, dto.Status));
+        // Ghép domain FE nếu nhận về path tương đối
+        var feBase = _config["Frontend:BaseUrl"] ?? "http://localhost:5173";
+        var finalUrl = redirectPath.StartsWith("/")
+            ? feBase.TrimEnd('/') + redirectPath
+            : redirectPath;
 
-    [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id) => Ok(await _svc.DeleteAsync(id));
+        return Redirect(finalUrl);
+    }
+
+    public record TopupRequest(string UserId, decimal Amount);
 }

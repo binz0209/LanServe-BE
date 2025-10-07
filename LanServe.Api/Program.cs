@@ -126,6 +126,10 @@ services.AddScoped<INotificationRepository>(sp =>
     new NotificationRepository(sp.GetRequiredService<MongoDbContext>().Notifications));
 services.AddScoped<IReviewRepository>(sp =>
     new ReviewRepository(sp.GetRequiredService<MongoDbContext>().Reviews));
+services.AddScoped<IWalletRepository>(sp =>
+    new WalletRepository(sp.GetRequiredService<MongoDbContext>().Wallets));
+services.AddScoped<IWalletTransactionRepository>(sp =>
+    new WalletTransactionRepository(sp.GetRequiredService<MongoDbContext>().WalletTransactions));
 
 // ========== Services (Application) ==========
 services.AddScoped<IUserService, UserService>();
@@ -141,6 +145,7 @@ services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<INotificationService, NotificationService>();
 services.AddScoped<IReviewService, ReviewService>();
 services.AddSingleton<IJwtTokenService, JwtTokenService>();
+services.AddScoped<IVnPayService, VnPayService>();
 
 var app = builder.Build();
 app.UseExceptionHandler(errorApp =>

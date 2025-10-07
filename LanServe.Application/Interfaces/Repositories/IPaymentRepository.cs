@@ -1,12 +1,11 @@
-﻿using LanServe.Domain.Entities;
+﻿// LanServe.Application/Interfaces/Repositories/IPaymentRepository.cs
+using LanServe.Domain.Entities;
 
 namespace LanServe.Application.Interfaces.Repositories;
 
 public interface IPaymentRepository
 {
-    Task<Payment?> GetByIdAsync(string id);
-    Task<IEnumerable<Payment>> GetByContractIdAsync(string contractId);
-    Task<Payment> InsertAsync(Payment entity);
-    Task<bool> UpdateStatusAsync(string id, string newStatus);
-    Task<bool> DeleteAsync(string id);
+    Task<Payment?> GetByTxnRefAsync(string txnRef, CancellationToken ct = default);
+    Task<Payment> InsertAsync(Payment payment, CancellationToken ct = default);
+    Task UpdateAsync(Payment payment, CancellationToken ct = default);
 }

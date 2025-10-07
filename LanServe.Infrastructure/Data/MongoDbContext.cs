@@ -1,4 +1,5 @@
-﻿using LanServe.Domain.Entities; // <-- đổi theo namespace entity thật của bạn
+﻿// LanServe.Infrastructure/Data/MongoDbContext.cs
+using LanServe.Domain.Entities;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -21,7 +22,6 @@ public class MongoDbContext
         var client = new MongoClient(_opt.ConnectionString);
         Database = client.GetDatabase(_opt.DbName);
 
-        // đảm bảo Collections không null
         _opt.Collections ??= new MongoOptions.CollectionsSection();
     }
 
@@ -39,5 +39,8 @@ public class MongoDbContext
     public IMongoCollection<Message> Messages => Col<Message>(_opt.Collections.Messages);
     public IMongoCollection<Notification> Notifications => Col<Notification>(_opt.Collections.Notifications);
     public IMongoCollection<Review> Reviews => Col<Review>(_opt.Collections.Reviews);
-}
 
+    // NEW
+    public IMongoCollection<Wallet> Wallets => Col<Wallet>(_opt.Collections.Wallets);
+    public IMongoCollection<WalletTransaction> WalletTransactions => Col<WalletTransaction>(_opt.Collections.WalletTransactions);
+}
