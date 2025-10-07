@@ -12,4 +12,5 @@ public interface IProjectService
     Task<Project> CreateAsync(Project entity);
     Task<bool> UpdateAsync(string id, Project entity);
     Task<bool> DeleteAsync(string id);
+    Task<Project?> UpdateStatusAsync(string id, string newStatus);
 }

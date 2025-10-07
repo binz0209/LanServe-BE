@@ -40,4 +40,6 @@ public class ProjectService : IProjectService
 
     public Task<bool> DeleteAsync(string id)
         => _repo.DeleteAsync(id);
+    public async Task<Project?> UpdateStatusAsync(string id, string newStatus) =>
+        await _repo.UpdateStatusAsync(id, newStatus);
 }

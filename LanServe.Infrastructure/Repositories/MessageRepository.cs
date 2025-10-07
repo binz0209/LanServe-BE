@@ -138,5 +138,13 @@ GetConversationsForUserAsync(string userId)
             UnreadCount: d.GetValue("unreadCount", 0).ToInt32()
         )).ToList();
     }
+    public async Task<long> DeleteByProposalIdInHtmlAsync(string proposalId)
+    {
+        // Xoá theo substring an toàn, không cần regex phức tạp
+        var pattern = $"data-proposal-id='{proposalId}'";
+        var filter = Builders<Message>.Filter.Regex(m => m.Text, new MongoDB.Bson.BsonRegularExpression(pattern));
+        var res = await _col.DeleteManyAsync(filter);
+        return res.DeletedCount;
+    }
 
 }

@@ -12,4 +12,5 @@ public interface IProjectRepository
     Task<Project> InsertAsync(Project entity);
     Task<bool> UpdateAsync(Project entity);
     Task<bool> DeleteAsync(string id);
+    Task<Project?> UpdateStatusAsync(string id, string newStatus);
 }

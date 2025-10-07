@@ -40,5 +40,17 @@ namespace LanServe.Infrastructure.Repositories
             var result = await _col.DeleteOneAsync(x => x.Id == id);
             return result.DeletedCount > 0;
         }
+        public async Task<Proposal?> UpdateBidAsync(string proposalId, decimal newBid)
+        {
+            var update = Builders<Proposal>.Update
+                .Set(p => p.BidAmount, newBid)
+                .Set(p => p.CreatedAt, DateTime.UtcNow);
+
+            return await _col.FindOneAndUpdateAsync(
+                p => p.Id == proposalId,
+                update,
+                new FindOneAndUpdateOptions<Proposal> { ReturnDocument = ReturnDocument.After }
+            );
+        }
     }
 }

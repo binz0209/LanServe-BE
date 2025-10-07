@@ -52,4 +52,14 @@ public class ProjectRepository : IProjectRepository
     {
         return await _collection.Find(_ => true).ToListAsync();
     }
+    public async Task<Project?> UpdateStatusAsync(string id, string newStatus)
+    {
+        var update = Builders<Project>.Update.Set(p => p.Status, newStatus);
+        var result = await _collection.FindOneAndUpdateAsync(
+            p => p.Id == id,
+            update,
+            new FindOneAndUpdateOptions<Project> { ReturnDocument = ReturnDocument.After }
+        );
+        return result;
+    }
 }

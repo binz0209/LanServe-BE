@@ -15,4 +15,6 @@ public interface IMessageRepository
     // Trả danh sách hội thoại đã group (tuple, không tạo DTO)
     Task<List<(string ConversationKey, string PartnerId, string LastMessage, DateTime LastAt, int UnreadCount)>>
         GetConversationsForUserAsync(string userId);
+
+    Task<long> DeleteByProposalIdInHtmlAsync(string proposalId);
 }
