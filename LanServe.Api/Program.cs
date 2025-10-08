@@ -146,6 +146,7 @@ services.AddScoped<INotificationService, NotificationService>();
 services.AddScoped<IReviewService, ReviewService>();
 services.AddSingleton<IJwtTokenService, JwtTokenService>();
 services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
 
 var app = builder.Build();
 app.UseExceptionHandler(errorApp =>

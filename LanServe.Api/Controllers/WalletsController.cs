@@ -1,9 +1,8 @@
-﻿// LanServe.Api/Controllers/WalletsController.cs
-using LanServe.Application.Interfaces.Repositories;
+﻿using System.Security.Claims;
+using LanServe.Application.Interfaces.Services;
 using LanServe.Domain.Entities;
-using LanServe.Infrastructure.Data;              // 👈 dùng để query lịch sử (WalletTransactions)
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 
 namespace LanServe.Api.Controllers;
 
@@ -11,131 +10,116 @@ namespace LanServe.Api.Controllers;
 [Route("api/[controller]")]
 public class WalletsController : ControllerBase
 {
-    private readonly IWalletRepository _wallets;
-    private readonly IWalletTransactionRepository _walletTxns;
-    private readonly IPaymentRepository _payments;
-    private readonly MongoDbContext _ctx;      // 👈 thêm để truy vấn lịch sử
+    private readonly IWalletService _svc;
 
-    public WalletsController(
-        IWalletRepository wallets,
-        IWalletTransactionRepository walletTxns,
-        IPaymentRepository payments,
-        MongoDbContext ctx)                     // 👈 inject context
+    public WalletsController(IWalletService svc) { _svc = svc; }
+
+    // ===== Helpers =====
+    private string? GetUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // ===== Endpoints =====
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> Me()
     {
-        _wallets = wallets;
-        _walletTxns = walletTxns;
-        _payments = payments;
-        _ctx = ctx;
+        var userId = GetUserId();
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+        var wallet = await _svc.EnsureAsync(userId);
+        return Ok(new { wallet.Id, wallet.UserId, wallet.Balance });
     }
 
-    /// <summary>
-    /// (Dev/Test) Lấy số dư ví theo userId.
-    /// Production nên có /me lấy từ JWT.
-    /// </summary>
+    [Authorize]
     [HttpGet("{userId}")]
-    public async Task<IActionResult> GetBalance(string userId, CancellationToken ct)
+    public async Task<IActionResult> GetByUserId(string userId)
     {
-        var w = await _wallets.GetOrCreateByUserAsync(userId, ct);
-        return Ok(new { balance = w.Balance });
+        var w = await _svc.GetByUserIdAsync(userId);
+        return w is null ? NotFound() : Ok(w);
     }
 
-    /// <summary>
-    /// Trả về số dư + 10 giao dịch gần nhất để FE hiển thị nhanh.
-    /// </summary>
-    [HttpGet("summary")]
-    public async Task<IActionResult> GetSummary([FromQuery] string userId, CancellationToken ct)
+    public record UpdateWalletDto(long Balance);
+
+    [Authorize(Roles = "Admin")]
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, [FromBody] UpdateWalletDto dto)
     {
-        if (string.IsNullOrWhiteSpace(userId)) return BadRequest("Missing userId");
-        var w = await _wallets.GetOrCreateByUserAsync(userId, ct);
-
-        // Lấy 10 giao dịch gần nhất (mới -> cũ)
-        var items = await _ctx.WalletTransactions
-            .Find(x => x.UserId == userId)
-            .SortByDescending(x => x.CreatedAt)
-            .Limit(10)
-            .ToListAsync(ct);
-
-        var recent = items.Select(x => new
-        {
-            id = x.Id,
-            userId = x.UserId,
-            walletId = x.WalletId,
-            type = x.Type,
-            amount = x.Amount,
-            balanceAfter = x.BalanceAfter,
-            note = x.Note,
-            createdAt = x.CreatedAt
-        });
-
-        return Ok(new { balance = w.Balance, recent });
+        var w = await _svc.GetByIdAsync(id);
+        if (w is null) return NotFound();
+        w.Balance = dto.Balance;
+        var ok = await _svc.UpdateAsync(id, w);
+        return ok ? Ok(w) : BadRequest(new { message = "Update failed" });
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var ok = await _svc.DeleteAsync(id);
+        return ok ? Ok(new { deleted = true }) : NotFound();
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var wallets = await _svc.GetAllAsync();
+        // để FE hiển thị nhẹ
+        var list = wallets.Select(w => new { w.Id, w.UserId, w.Balance }).ToList();
+        return Ok(list);
+    }
+
+    public record ChangeBalanceRequest(long Delta, string? Note);
+
     /// <summary>
-    /// Danh sách giao dịch ví, có sort theo ngày.
-    /// sort = "desc" (mặc định) hoặc "asc"; take tối đa 100.
+    /// Người dùng tự nạp/rút (delta dương là nạp, âm là rút). Chặn âm quá số dư.
     /// </summary>
-    [HttpGet("history")]
-    public async Task<IActionResult> GetHistory(
-        [FromQuery] string userId,
+    [Authorize]
+    [HttpPost("change-balance")]
+    public async Task<IActionResult> ChangeBalance([FromBody] ChangeBalanceRequest req)
+    {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
+        var (ok, errors, wallet) = await _svc.ChangeBalanceAsync(userId, req.Delta, req.Note);
+        if (!ok) return BadRequest(new { message = "Change balance failed", errors });
+
+        return Ok(new { wallet!.Id, wallet!.UserId, wallet!.Balance });
+    }
+    [Authorize]
+    [HttpGet("topups")]
+    public async Task<IActionResult> GetTopups(
+        [FromQuery] string? userId,
         [FromQuery] int take = 20,
         [FromQuery] string sort = "desc",
         CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(userId)) return BadRequest("Missing userId");
-        take = Math.Clamp(take, 1, 100);
+        var uid = string.IsNullOrWhiteSpace(userId) ? GetUserId() : userId;
+        if (string.IsNullOrWhiteSpace(uid)) return Unauthorized();
 
-        var filter = Builders<WalletTransaction>.Filter.Eq(x => x.UserId, userId);
-        var sortDesc = string.Equals(sort, "asc", StringComparison.OrdinalIgnoreCase)
-            ? Builders<WalletTransaction>.Sort.Ascending(x => x.CreatedAt)
-            : Builders<WalletTransaction>.Sort.Descending(x => x.CreatedAt);
+        var asc = string.Equals(sort, "asc", StringComparison.OrdinalIgnoreCase);
+        var txns = await _svc.GetTopupHistoryAsync(uid!, take, asc, ct);
 
-        var list = await _ctx.WalletTransactions
-            .Find(filter)
-            .Sort(sortDesc)
-            .Limit(take)
-            .ToListAsync(ct);
-
-        var items = list.Select(x => new
-        {
-            id = x.Id,
-            userId = x.UserId,
-            walletId = x.WalletId,
-            type = x.Type,
-            amount = x.Amount,
-            balanceAfter = x.BalanceAfter,
-            note = x.Note,
-            createdAt = x.CreatedAt
-        });
-
-        return Ok(items);
+        return Ok(txns);
     }
+    // LanServe.Api/Controllers/WalletsController.cs
 
-    /// <summary>
-    /// FE gọi ở /payment-success để XÁC NHẬN nạp tiền theo orderId (vnp_TxnRef).
-    /// Trả về trạng thái giao dịch + số dư ví hiện tại.
-    /// </summary>
-    [HttpGet("topup-result")]
-    public async Task<IActionResult> GetTopupResult([FromQuery] string orderId, [FromQuery] string userId, CancellationToken ct)
+    [Authorize] // có thể siết quyền: chỉ client của contract hoặc Admin
+    [HttpPost("payout")]
+    public async Task<IActionResult> Payout([FromBody] PayoutRequest req)
     {
-        if (string.IsNullOrWhiteSpace(orderId)) return BadRequest("Missing orderId (vnp_TxnRef)");
-        if (string.IsNullOrWhiteSpace(userId)) return BadRequest("Missing userId");
+        if (req is null || string.IsNullOrWhiteSpace(req.ToUserId) || req.Amount <= 0)
+            return BadRequest(new { message = "Invalid payout request" });
 
-        var payment = await _payments.GetByTxnRefAsync(orderId, ct);
-        if (payment == null) return NotFound(new { message = "Payment not found" });
+        // TODO (khuyến nghị): kiểm tra quyền: currentUserId có phải client của contractId không?
 
-        if (payment.UserId != userId)
-            return BadRequest(new { message = "Payment does not belong to this user" });
+        // cộng tiền cho freelancer
+        var (ok, errors, wallet) = await _svc.ChangeBalanceAsync(req.ToUserId, +req.Amount,
+            req.Note ?? $"Payout contract {req.ContractId}");
+        if (!ok) return BadRequest(new { message = "Payout failed", errors });
 
-        var wallet = await _wallets.GetOrCreateByUserAsync(payment.UserId, ct);
-
-        return Ok(new
-        {
-            orderId = payment.Vnp_TxnRef,
-            status = payment.Status,              // "Paid"/"Failed"/"Pending"
-            responseCode = payment.Vnp_ResponseCode,
-            walletBalance = wallet.Balance,
-            amount = payment.Amount,
-            paidAt = payment.PaidAt,
-        });
+        return Ok(new { wallet!.UserId, wallet!.Balance });
     }
+
+    public record PayoutRequest(string ToUserId, long Amount, string? ContractId, string? Note);
+
 }
