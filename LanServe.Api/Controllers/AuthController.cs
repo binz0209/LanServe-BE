@@ -25,9 +25,16 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest req)
     {
-        var user = await _users.RegisterAsync(req.FullName, req.Email, req.Password, req.Role);
-        var (token, exp) = _jwt.GenerateToken(user.Id, user.Email, user.Role);
-        return Ok(new { accessToken = token, expiresIn = exp });
+        try
+        {
+            var user = await _users.RegisterAsync(req.FullName, req.Email, req.Password, req.Role);
+            var (token, exp) = _jwt.GenerateToken(user.Id, user.Email, user.Role);
+            return Ok(new { accessToken = token, expiresIn = exp });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [AllowAnonymous]
